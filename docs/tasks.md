@@ -11,7 +11,7 @@ Task status: `[ ]` todo · `[x]` done · `[-]` in progress
 - [ ] Create `app/main.py` with FastAPI app instance
 - [ ] Create `app/templates/index.html` (empty base)
 - [ ] Create `app/static/js/app.js` (empty)
-- [ ] Add `requirements.txt` (fastapi, uvicorn, jinja2)
+- [x] Add `requirements.txt` (fastapi, uvicorn, jinja2)
 - [ ] Add `requirements-dev.txt` (pytest, pytest-bdd, httpx, ruff)
 - [ ] Confirm `uvicorn app.main:app --reload` starts without errors
 
