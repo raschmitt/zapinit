@@ -17,7 +17,7 @@ Task status: `[ ]` todo · `[x]` done · `[-]` in progress
 
 ---
 
-### T-02 · Main page — Google-style layout
+### ~~T-02 · Main page — Google-style layout~~
 
 - [x] Centered layout with logo/name at the top
 - [x] Phone number input area in the center
