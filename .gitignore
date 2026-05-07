@@ -33,6 +33,9 @@ ENV/
 *.swp
 *.swo
 
+# Local agent config
+AGENTS.local.md
+
 # OS
 .DS_Store
 Thumbs.db

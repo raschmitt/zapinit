@@ -2,26 +2,7 @@
 
 Guidelines for AI agents working in this repository. Read this before making any change.
 
----
-
-## GitHub Account
-
-Always use the **`raschmitt`** account for every interaction with GitHub and the `gh` CLI.
-
-This repo uses a multi-account SSH setup. The correct remote host alias is `github-raschmitt`, not `github.com`.
-
-```bash
-# Verify the active account before any gh command
-gh auth status
-
-# Correct remote URL format for this repo
-git remote set-url origin git@github-raschmitt:raschmitt/zapinit.git
-
-# If you need to switch active account
-gh auth switch --user raschmitt
-```
-
-Never push or open PRs from the `raschmitt-tl` account.
+If an `AGENTS.local.md` file exists at the root of the repo, read it too — it contains machine-specific configuration (GitHub account, SSH aliases, local paths) that is not committed to version control.
 
 ---
 
