@@ -9,7 +9,7 @@ Task status: `[ ]` todo · `[x]` done · `[-]` in progress
 ### T-01 · Project scaffold
 
 - [x] Create `app/main.py` with FastAPI app instance
-- [ ] Create `app/templates/index.html` (empty base)
+- [x] Create `app/templates/index.html` (empty base)
 - [ ] Create `app/static/js/app.js` (empty)
 - [x] Add `requirements.txt` (fastapi, uvicorn, jinja2)
 - [x] Add `requirements-dev.txt` (pytest, pytest-bdd, httpx, ruff)
