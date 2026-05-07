@@ -59,7 +59,7 @@ Keep branch names lowercase, hyphen-separated, no slashes beyond the prefix.
 
 ## Commit Conventions
 
-One task = one commit. Do not bundle unrelated changes.
+One subtask = one commit. Do not bundle unrelated changes.
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
@@ -164,6 +164,24 @@ Both must pass with zero errors.
 ## Task Tracking
 
 `docs/tasks.md` is the source of truth for what needs to be done.
+
+### Task → PR → Commit mapping
+
+The unit of work maps directly to git history:
+
+```
+Task (docs/tasks.md)
+└── Pull Request  ← one PR per task
+    ├── Commit    ← one commit per subtask (checkbox item)
+    ├── Commit
+    └── Commit
+```
+
+- **One task = one PR.** Never combine two tasks in the same PR, even if they are small.
+- **One subtask = one commit.** Each checkbox item in `docs/tasks.md` is a separate commit inside that PR.
+- If a task has only one subtask, the PR still has exactly one commit.
+
+### Status
 
 - Before starting work, find the relevant task and mark it `[-]` (in progress)
 - When the PR is merged, mark it `[x]` (done) in a follow-up commit to `main` via PR, or include it in the same PR
