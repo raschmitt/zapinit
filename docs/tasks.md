@@ -21,8 +21,8 @@ Task status: `[ ]` todo · `[x]` done · `[-]` in progress
 
 - [x] Centered layout with logo/name at the top
 - [x] Phone number input area in the center
-- [ ] "Open on WhatsApp" button (WhatsApp green `#25D366`)
-- [ ] Responsive for mobile and desktop
+- [x] "Open on WhatsApp" button (WhatsApp green `#25D366`)
+- [x] Responsive for mobile and desktop
 - [x] No external fonts — system font stack only
 
 **BDD scenarios:**
