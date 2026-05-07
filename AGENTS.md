@@ -97,21 +97,34 @@ Every PR must have:
 feat(redirect): add WhatsApp URL builder with E.164 formatting
 ```
 
-**Description** using this structure:
+**Description** — always use the repository PR template located at `.github/pull_request_template.md`. Never skip or replace it with free-form text. The template sections are:
 
-```markdown
-## What
-Short explanation of the change.
+| Section | What to write |
+|---|---|
+| `## Task/Issue` | Link to the task in `docs/tasks.md` (e.g. `T-02`) or an issue number |
+| `## What?` | Bullet list — one point per concrete change |
+| `## Why?` | Bullet list — one point per reason or motivation |
 
-## Why
-Context and motivation — link to the relevant task in docs/tasks.md if applicable.
+`## What?` and `## Why?` must use bullet points. Avoid prose paragraphs.
 
-## How
-Notable implementation decisions worth calling out.
+When opening a PR via `gh pr create`, pass the description through a heredoc so the template structure is preserved:
 
-## Test plan
-- [ ] Describe what you tested manually or automatically
-- [ ] List the BDD scenarios that cover this change
+```bash
+gh pr create \
+  --title "feat(redirect): add WhatsApp URL builder" \
+  --body "$(cat <<'EOF'
+## Task/Issue
+T-04 · WhatsApp redirect
+
+## What?
+- Add `build_wa_url()` helper that formats E.164 numbers for wa.me
+- Add client-side redirect on button click and Enter key
+
+## Why?
+- Users need to open WhatsApp without saving the number as a contact
+- E.164 formatting is required by the wa.me URL spec
+EOF
+)"
 ```
 
 Additional rules:
