@@ -20,7 +20,7 @@ Task status: `[ ]` todo · `[x]` done · `[-]` in progress
 ### T-02 · Main page — Google-style layout
 
 - [x] Centered layout with logo/name at the top
-- [ ] Phone number input area in the center
+- [x] Phone number input area in the center
 - [ ] "Open on WhatsApp" button (WhatsApp green `#25D366`)
 - [ ] Responsive for mobile and desktop
 - [x] No external fonts — system font stack only
