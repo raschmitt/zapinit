@@ -102,8 +102,10 @@ feat(redirect): add WhatsApp URL builder with E.164 formatting
 | Section | What to write |
 |---|---|
 | `## Task/Issue` | Link to the task in `docs/tasks.md` (e.g. `T-02`) or an issue number |
-| `## What?` | What this PR changes — specific and concise |
-| `## Why?` | Why the change is needed and what problem it solves |
+| `## What?` | Bullet list — one point per concrete change |
+| `## Why?` | Bullet list — one point per reason or motivation |
+
+`## What?` and `## Why?` must use bullet points. Avoid prose paragraphs.
 
 When opening a PR via `gh pr create`, pass the description through a heredoc so the template structure is preserved:
 
@@ -115,11 +117,12 @@ gh pr create \
 T-04 · WhatsApp redirect
 
 ## What?
-Add E.164 phone number formatting and wa.me URL construction.
+- Add `build_wa_url()` helper that formats E.164 numbers for wa.me
+- Add client-side redirect on button click and Enter key
 
 ## Why?
-Users need to be redirected to the correct WhatsApp Web URL based on
-the country code and local number they entered.
+- Users need to open WhatsApp without saving the number as a contact
+- E.164 formatting is required by the wa.me URL spec
 EOF
 )"
 ```

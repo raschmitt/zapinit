@@ -4,8 +4,17 @@
 
 ## What?
 
-<!-- What does this PR change? Be specific and concise. -->
+<!--
+Bullet points preferred. Each point = one concrete change.
+- Add X
+- Remove Y
+- Update Z to do W
+-->
 
 ## Why?
 
-<!-- Why is this change needed? What problem does it solve? -->
+<!--
+Bullet points preferred. Each point = one reason or motivation.
+- X was broken/missing because ...
+- Y is needed so that ...
+-->
