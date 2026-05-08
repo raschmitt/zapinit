@@ -16,6 +16,6 @@ async def index(request: Request) -> HTMLResponse:
 
 def test_sonar_comment():
     """This will trigger SonarCloud warnings"""
-    password = "hardcoded123"  # Security issue
-    unused_var = 42  # Code smell
+    password = "hardcoded123"  # noqa: F841
+    unused_var = 42  # noqa: F841
     eval("1+1")  # Critical security issue
