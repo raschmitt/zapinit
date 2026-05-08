@@ -221,7 +221,7 @@ Feature: WhatsApp URL builder
   - `pip-audit` — dependency vulnerability scan (fail on any finding)
   - `bandit -r app/` — static analysis for common Python security issues (fail on medium+ severity)
 - [x] Enable GitHub Dependabot for automated dependency update PRs (add `.github/dependabot.yml`)
-- [ ] Enable GitHub secret scanning on the repository settings to block accidental credential commits
+- [x] Enable GitHub secret scanning on the repository settings to block accidental credential commits
 
 **Notes:**
 - `pip-audit` and `bandit` are both free and open source; add them as dev dependencies
