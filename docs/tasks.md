@@ -201,9 +201,9 @@ Feature: WhatsApp URL builder
 
 ### T-17 · SonarCloud integration
 
-- [ ] Create a SonarCloud account and link the `raschmitt/zapinit` GitHub repository
-- [ ] Add `sonar-project.properties` at the repo root with project key, organization, and source/test paths
-- [ ] Add a `sonarcloud` job to `.github/workflows/ci.yml` that runs after `test` and uploads `coverage.xml` to SonarCloud
+- [x] Create a SonarCloud account and link the `raschmitt/zapinit` GitHub repository
+- [x] Add `sonar-project.properties` at the repo root with project key, organization, and source/test paths
+- [x] Add a `sonarcloud` job to `.github/workflows/ci.yml` that runs after `test` and uploads `coverage.xml` to SonarCloud
 - [ ] Configure SonarCloud GitHub app so analysis results appear as PR checks and inline code annotations
 - [ ] Set Quality Gate to block PR merge if gate fails (Sonar way: coverage drop, new bugs, new vulnerabilities)
 
