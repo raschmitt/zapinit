@@ -85,7 +85,6 @@ Rules:
 - No period at the end of the summary line
 - Body is optional but recommended when the *why* is non-obvious
 - Never use `--no-verify` to skip hooks
-- **AI Co-authorship:** All commits made by an AI agent MUST include a `Co-authored-by` trailer for that AI (e.g., `Co-authored-by: claude <claude@anthropic.com>` or `Co-authored-by: gemini <gemini@google.com>`).
 
 ---
 

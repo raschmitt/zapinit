@@ -37,6 +37,3 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
-
-# Gemini CLI local agents
-AGENTS.local.md

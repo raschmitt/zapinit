@@ -98,9 +98,9 @@ The `wa.me` URL is constructed and opened entirely in JavaScript. This means:
 
 `intl-tel-input` outputs numbers in E.164 format (e.g. `+5511999999999`). The redirect strips the `+` to match the `wa.me/<number>` spec. Validation is delegated to the library — no custom regex.
 
-### Country auto-detection
+### Country auto-detection (DEPRECATED)
 
-The browser's `navigator.language` tag (e.g. `pt-BR`, `en-US`) is parsed on load to pre-select the country. Falls back to Brazil (`BR`) if the locale is ambiguous or unavailable. No geolocation API is used — no permission prompt, no latency.
+The previous auto-detection feature using `navigator.language` was removed to simplify the user experience and ensure consistency. The app now defaults to **Brazil (BR)** for all users. The auto-detection logic was deprecated as it often failed to accurately reflect the user's actual location (e.g., English browser settings for users in Brazil).
 
 ### Vendor-agnostic deployment
 

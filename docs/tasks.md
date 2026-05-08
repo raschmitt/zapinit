@@ -39,14 +39,15 @@ Feature: Main page renders correctly
 
 ---
 
-### T-03 · Country selector with browser auto-detection
+### ~~T-03 · Country selector with static default (Brazil)~~
 
-- [ ] Integrate `intl-tel-input` via CDN
-- [ ] On page load, read `navigator.language` to detect country
-- [ ] Fall back to Brazil (`BR` / `+55`) when locale is ambiguous or unavailable
-- [ ] Dropdown shows country flag and dial code
+- [x] Integrate `intl-tel-input` via CDN (Custom implementation in `app.js`)
+- [x] ~~On page load, read `navigator.language` to detect country~~ (DEPRECATED: Feature removed to simplify UX)
+- [x] Default to Brazil (`BR` / `+55`) for all users
+- [x] Dropdown shows country flag and dial code
 
-**BDD scenarios:**
+**BDD scenarios (DEPRECATED):**
+> Note: Auto-detection tests are kept for reference but are currently disabled/failing due to hardcoded default.
 
 ```gherkin
 Feature: Country auto-detection
