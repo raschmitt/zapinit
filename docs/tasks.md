@@ -117,6 +117,15 @@ Feature: WhatsApp redirect
 
 ---
 
+### T-14 · GitHub Pages deployment
+
+- [ ] Create a static version of the app (move `index.html` to root or `dist/`)
+- [ ] Ensure all assets (`app.js`, CSS) are referenced with relative paths
+- [ ] Add `.github/workflows/deploy.yml` for automated deployment to GH Pages
+- [ ] Verify the app is live at `https://<user>.github.io/zapinit/`
+
+---
+
 ## Milestone 2 — Quality & CI
 
 ### T-05 · Test suite setup
@@ -166,10 +175,86 @@ Feature: WhatsApp URL builder
 
 ### T-07 · CI pipeline
 
-- [ ] Add `.github/workflows/ci.yml`
-- [ ] Steps: install deps → ruff lint → pytest
-- [ ] Pipeline runs on every push and pull request to `main`
-- [ ] No paid GitHub Actions minutes required (public repo uses free tier)
+- [x] Add `.github/workflows/ci.yml`
+- [x] Steps: install deps → ruff lint → pytest
+- [x] Pipeline runs on every push and pull request to `main`
+- [x] No paid GitHub Actions minutes required (public repo uses free tier)
+
+---
+
+### T-16 · Code coverage and mutation testing in CI
+
+- [x] Add `pytest-cov==7.1.0` and `mutmut==2.5.1` to `requirements-dev.txt`
+- [x] Configure coverage in `pyproject.toml`: source = `app/`, fail under **80%**
+- [x] Extend `.github/workflows/ci.yml` with a `test` job: `pytest --cov=app --cov-fail-under=80 --cov-report=xml`
+- [x] Add a `mutation` job that runs `scripts/check_mutation_score.py` and fails below **50%** (raise to 65% after T-06 lands)
+- [x] Upload `coverage.xml` as a CI artifact for inspection
+- [x] Add `scripts/check_mutation_score.py` that parses `mutmut junitxml` output and enforces the threshold
+
+**Thresholds and rationale:**
+
+| Metric | Threshold | Rationale |
+|---|---|---|
+| Line coverage | 80% | Current coverage is 100%; threshold ensures it stays high as new code is added |
+| Mutation score | 50% → 65% | Starting at 50% (current score); 5 surviving mutants are static-file config lines not exercised by BDD integration tests — raise to 65% when T-06 unit tests land |
+
+---
+
+### T-17 · SonarCloud integration
+
+- [x] Create a SonarCloud account and link the `raschmitt/zapinit` GitHub repository
+- [x] Add `sonar-project.properties` at the repo root with project key, organization, and source/test paths
+- [x] Add a `sonarcloud` job to `.github/workflows/ci.yml` that runs after `test` and uploads `coverage.xml` to SonarCloud
+- [x] Configure SonarCloud GitHub app so analysis results appear as PR checks and inline code annotations
+- [x] Set Quality Gate to block PR merge if gate fails (Sonar way: coverage drop, new bugs, new vulnerabilities)
+
+**Notes:**
+- SonarCloud is free for public repos — no billing required
+- `coverage.xml` produced by T-16 is the input; T-16 must land first
+- The `SONAR_TOKEN` secret must be added to the GitHub repo settings before the workflow step runs
+
+---
+
+### T-18 · Security scanning in CI
+
+- [x] Add `pip-audit==2.10.0` and `bandit==1.9.4` to `requirements-dev.txt`
+- [x] Add a `security` job to `.github/workflows/ci.yml` with the following steps:
+  - `pip-audit` — dependency vulnerability scan (fail on any finding)
+  - `bandit -r app/` — static analysis for common Python security issues (fail on medium+ severity)
+- [x] Enable GitHub Dependabot for automated dependency update PRs (add `.github/dependabot.yml`)
+- [x] Enable GitHub secret scanning on the repository settings to block accidental credential commits
+
+**Notes:**
+- `pip-audit` and `bandit` are both free and open source; add them as dev dependencies
+- Bandit scope is `app/` only — exclude `tests/` to avoid false positives on test helpers
+- The `security` job can run in parallel with `test`; it does not depend on coverage results
+
+---
+
+### T-19 · Dependabot auto-merge
+
+- [x] Extend `.github/dependabot.yml` to monitor all ecosystems in use: `pip` and `github-actions` (already present); detect and add `npm` if a `package.json` is introduced
+- [x] Create `.github/workflows/dependabot-auto-merge.yml` that:
+  - Triggers only on Dependabot PRs (`github.actor == 'dependabot[bot]'`)
+  - Auto-approves the PR using `gh pr review --approve`
+  - Enables auto-merge (squash) for **patch and minor** updates only — skips major version bumps
+  - Waits for all CI checks to pass before merging (auto-merge handles this natively)
+- [x] Set workflow permissions: `contents: write`, `pull-requests: write`
+
+**Notes:**
+- Project currently uses `pip` and `github-actions` ecosystems — no `npm` present
+- Major version updates require manual review; the workflow must parse the version bump from the Dependabot PR metadata to enforce this
+- `GITHUB_TOKEN` is sufficient — no PAT required as long as branch protection allows the token to merge
+
+---
+
+### T-15 · Dark mode support
+
+- [ ] Implement dark mode using Tailwind CSS `dark:` classes
+- [ ] Add a theme toggle switch (Sun/Moon icon)
+- [ ] Persist theme preference in `localStorage`
+- [ ] Respect system-level color scheme preference (`prefers-color-scheme`)
+- [ ] Ensure all components (inputs, dropdowns, buttons) are accessible in dark mode
 
 ---
 
@@ -177,7 +262,7 @@ Feature: WhatsApp URL builder
 
 > These tasks are not scheduled. Listed for architectural awareness.
 
-- [ ] **T-08** · Dockerfile + docker-compose for local dev and deployment
+- [ ] **T-08** · ~~Dockerfile + docker-compose for local dev and deployment~~ (DEPRECATED: Switching to static hosting)
 - [ ] **T-09** · `POST /track` endpoint to log redirects (privacy-safe: no full numbers, only country code + digit count)
 - [ ] **T-10** · User auth with OIDC (vendor-agnostic: Keycloak, Authelia, or Auth0 free tier)
 - [ ] **T-11** · Browser extension (Manifest V3) reusing `app.js` logic

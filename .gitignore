@@ -37,3 +37,17 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Gemini CLI local agents
+AGENTS.local.md
+GEMINI.md
+
+# mutmut
+.mutmut-cache
+mutants/
+html/
+
+# pytest-cov
+coverage.xml
+htmlcov/
+.coverage

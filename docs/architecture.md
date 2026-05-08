@@ -104,16 +104,15 @@ The previous auto-detection feature using `navigator.language` was removed to si
 
 ### Vendor-agnostic deployment
 
-The app has no hard dependency on any cloud provider. Any environment that runs Python 3.11+ and exposes a port works:
+The app is a **static-only** application hosted on **GitHub Pages**. While it includes a FastAPI server for local development and testing, no backend is required for production.
 
-| Option | Free tier |
-|---|---|
-| Render | Yes (spins down on idle) |
-| Railway | Yes (limited hours/month) |
-| Fly.io | Yes (2 shared VMs) |
-| Self-hosted VPS | Depends on provider |
+| Option | Type | Recommendation |
+|---|---|---|
+| **GitHub Pages** | Static | **Primary** (Cost-free, no server) |
+| ~~Render / Fly.io~~ | Server | DEPRECATED |
+| ~~Docker~~ | Container | DEPRECATED |
 
-A single `Dockerfile` (to be added) covers all of the above.
+The project has moved away from server-based hosting and containers in favor of a simpler, truly cost-free static model.
 
 ---
 
