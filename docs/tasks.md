@@ -116,6 +116,15 @@ Feature: WhatsApp redirect
 
 ---
 
+### T-14 · GitHub Pages deployment
+
+- [ ] Create a static version of the app (move `index.html` to root or `dist/`)
+- [ ] Ensure all assets (`app.js`, CSS) are referenced with relative paths
+- [ ] Add `.github/workflows/deploy.yml` for automated deployment to GH Pages
+- [ ] Verify the app is live at `https://<user>.github.io/zapinit/`
+
+---
+
 ## Milestone 2 — Quality & CI
 
 ### T-05 · Test suite setup
@@ -176,7 +185,7 @@ Feature: WhatsApp URL builder
 
 > These tasks are not scheduled. Listed for architectural awareness.
 
-- [ ] **T-08** · Dockerfile + docker-compose for local dev and deployment
+- [ ] **T-08** · ~~Dockerfile + docker-compose for local dev and deployment~~ (DEPRECATED: Switching to static hosting)
 - [ ] **T-09** · `POST /track` endpoint to log redirects (privacy-safe: no full numbers, only country code + digit count)
 - [ ] **T-10** · User auth with OIDC (vendor-agnostic: Keycloak, Authelia, or Auth0 free tier)
 - [ ] **T-11** · Browser extension (Manifest V3) reusing `app.js` logic
