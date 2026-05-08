@@ -181,6 +181,24 @@ Feature: WhatsApp URL builder
 
 ---
 
+### T-16 · Code coverage and mutation testing in CI
+
+- [x] Add `pytest-cov==7.1.0` and `mutmut==2.5.1` to `requirements-dev.txt`
+- [x] Configure coverage in `pyproject.toml`: source = `app/`, fail under **80%**
+- [x] Extend `.github/workflows/ci.yml` with a `test` job: `pytest --cov=app --cov-fail-under=80 --cov-report=xml`
+- [x] Add a `mutation` job that runs `scripts/check_mutation_score.py` and fails below **50%** (raise to 65% after T-06 lands)
+- [x] Upload `coverage.xml` as a CI artifact for inspection
+- [x] Add `scripts/check_mutation_score.py` that parses `mutmut junitxml` output and enforces the threshold
+
+**Thresholds and rationale:**
+
+| Metric | Threshold | Rationale |
+|---|---|---|
+| Line coverage | 80% | Current coverage is 100%; threshold ensures it stays high as new code is added |
+| Mutation score | 50% → 65% | Starting at 50% (current score); 5 surviving mutants are static-file config lines not exercised by BDD integration tests — raise to 65% when T-06 unit tests land |
+
+---
+
 ### T-15 · Dark mode support
 
 - [ ] Implement dark mode using Tailwind CSS `dark:` classes
