@@ -1,5 +1,10 @@
 # zapinit
 
+[![CI](https://img.shields.io/github/actions/workflow/status/raschmitt/zapinit/ci.yml?branch=main&label=CI)](https://github.com/raschmitt/zapinit/actions/workflows/ci.yml)
+[![Quality Gate](https://img.shields.io/sonar/quality_gate/raschmitt_zapinit?server=https%3A%2F%2Fsonarcloud.io&label=Quality%20Gate)](https://sonarcloud.io/project/overview?id=raschmitt_zapinit)
+[![Coverage](https://img.shields.io/sonar/coverage/raschmitt_zapinit?server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/project/overview?id=raschmitt_zapinit)
+[![Security Rating](https://img.shields.io/sonar/security_rating/raschmitt_zapinit?server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/project/overview?id=raschmitt_zapinit)
+
 Start a WhatsApp conversation with any phone number — no need to save the contact first.
 
 Enter a phone number, select the country, click **Open on WhatsApp**, and you're redirected straight to a chat in WhatsApp Web.
