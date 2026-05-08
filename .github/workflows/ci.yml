@@ -67,7 +67,7 @@ jobs:
         run: pytest --cov=app --cov-fail-under=80 --cov-report=xml --cov-report=html --cov-report=term-missing
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-report
@@ -120,7 +120,7 @@ jobs:
         run: mutmut html
 
       - name: Upload mutation report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: mutation-report
