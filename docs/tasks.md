@@ -216,12 +216,12 @@ Feature: WhatsApp URL builder
 
 ### T-18 · Security scanning in CI
 
-- [ ] Add `pip-audit` to `requirements-dev.txt` and run it in CI to catch known vulnerabilities in Python dependencies
-- [ ] Add a `security` job to `.github/workflows/ci.yml` with the following steps:
+- [x] Add `pip-audit==2.10.0` and `bandit==1.9.4` to `requirements-dev.txt`
+- [x] Add a `security` job to `.github/workflows/ci.yml` with the following steps:
   - `pip-audit` — dependency vulnerability scan (fail on any finding)
   - `bandit -r app/` — static analysis for common Python security issues (fail on medium+ severity)
-- [ ] Enable GitHub Dependabot for automated dependency update PRs (add `.github/dependabot.yml`)
-- [ ] Enable GitHub secret scanning on the repository settings to block accidental credential commits
+- [x] Enable GitHub Dependabot for automated dependency update PRs (add `.github/dependabot.yml`)
+- [x] Enable GitHub secret scanning on the repository settings to block accidental credential commits
 
 **Notes:**
 - `pip-audit` and `bandit` are both free and open source; add them as dev dependencies
