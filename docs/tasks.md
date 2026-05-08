@@ -134,6 +134,7 @@ Feature: WhatsApp redirect
 - [ ] Create `tests/features/` directory for `.feature` files
 - [ ] Create `tests/step_defs/` for pytest-bdd step definitions
 - [ ] All tests pass with `pytest`
+- [ ] Remove `sonar.coverage.exclusions=app/static/**` from `sonar-project.properties`
 
 **BDD scenarios:**
 
