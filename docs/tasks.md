@@ -232,13 +232,13 @@ Feature: WhatsApp URL builder
 
 ### T-19 · Dependabot auto-merge
 
-- [ ] Extend `.github/dependabot.yml` to monitor all ecosystems in use: `pip` and `github-actions` (already present); detect and add `npm` if a `package.json` is introduced
-- [ ] Create `.github/workflows/dependabot-auto-merge.yml` that:
+- [x] Extend `.github/dependabot.yml` to monitor all ecosystems in use: `pip` and `github-actions` (already present); detect and add `npm` if a `package.json` is introduced
+- [x] Create `.github/workflows/dependabot-auto-merge.yml` that:
   - Triggers only on Dependabot PRs (`github.actor == 'dependabot[bot]'`)
   - Auto-approves the PR using `gh pr review --approve`
   - Enables auto-merge (squash) for **patch and minor** updates only — skips major version bumps
   - Waits for all CI checks to pass before merging (auto-merge handles this natively)
-- [ ] Set workflow permissions: `contents: write`, `pull-requests: write`
+- [x] Set workflow permissions: `contents: write`, `pull-requests: write`
 
 **Notes:**
 - Project currently uses `pip` and `github-actions` ecosystems — no `npm` present
