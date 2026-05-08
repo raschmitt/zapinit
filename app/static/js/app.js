@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sort all countries by dial number ascending
     const sortedCountries = [...COUNTRIES].sort((a, b) => {
-        const dialA = parseInt(a.dial.replace('+', ''));
-        const dialB = parseInt(b.dial.replace('+', ''));
+        const dialA = Number.parseInt(a.dial.replace('+', ''));
+        const dialB = Number.parseInt(b.dial.replace('+', ''));
         return dialA - dialB;
     });
 
