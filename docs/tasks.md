@@ -181,6 +181,55 @@ Feature: WhatsApp URL builder
 
 ---
 
+### T-16 · Code coverage and mutation testing in CI
+
+- [ ] Add `pytest-cov` and `mutmut` to `requirements-dev.txt`
+- [ ] Configure coverage in `pyproject.toml`: source = `app/`, fail under **80%**
+- [ ] Extend `.github/workflows/ci.yml` with a `coverage` step: `pytest --cov=app --cov-fail-under=80 --cov-report=xml`
+- [ ] Add a `mutation` job that runs `mutmut run` and fails if mutation score is below **65%**
+- [ ] Upload `coverage.xml` as a CI artifact for inspection
+- [ ] Add a `scripts/check_mutation_score.py` helper that parses `mutmut junitxml` output and enforces the threshold
+
+**Thresholds and rationale:**
+
+| Metric | Threshold | Rationale |
+|---|---|---|
+| Line coverage | 80% | Achievable with the BDD scenarios + unit tests planned for M2; raise to 85%+ once T-06 URL builder tests land |
+| Mutation score | 65% | Integration tests kill fewer mutants than unit tests; realistic baseline that improves naturally as pure-function tests are added |
+
+---
+
+### T-17 · SonarCloud integration
+
+- [ ] Create a SonarCloud account and link the `raschmitt/zapinit` GitHub repository
+- [ ] Add `sonar-project.properties` at the repo root with project key, organization, and source/test paths
+- [ ] Add a `sonarcloud` job to `.github/workflows/ci.yml` that runs after `test` and uploads `coverage.xml` to SonarCloud
+- [ ] Configure SonarCloud GitHub app so analysis results appear as PR checks and inline code annotations
+- [ ] Set Quality Gate to block PR merge if gate fails (Sonar way: coverage drop, new bugs, new vulnerabilities)
+
+**Notes:**
+- SonarCloud is free for public repos — no billing required
+- `coverage.xml` produced by T-16 is the input; T-16 must land first
+- The `SONAR_TOKEN` secret must be added to the GitHub repo settings before the workflow step runs
+
+---
+
+### T-18 · Security scanning in CI
+
+- [ ] Add `pip-audit` to `requirements-dev.txt` and run it in CI to catch known vulnerabilities in Python dependencies
+- [ ] Add a `security` job to `.github/workflows/ci.yml` with the following steps:
+  - `pip-audit` — dependency vulnerability scan (fail on any finding)
+  - `bandit -r app/` — static analysis for common Python security issues (fail on medium+ severity)
+- [ ] Enable GitHub Dependabot for automated dependency update PRs (add `.github/dependabot.yml`)
+- [ ] Enable GitHub secret scanning on the repository settings to block accidental credential commits
+
+**Notes:**
+- `pip-audit` and `bandit` are both free and open source; add them as dev dependencies
+- Bandit scope is `app/` only — exclude `tests/` to avoid false positives on test helpers
+- The `security` job can run in parallel with `test`; it does not depend on coverage results
+
+---
+
 ### T-15 · Dark mode support
 
 - [ ] Implement dark mode using Tailwind CSS `dark:` classes
