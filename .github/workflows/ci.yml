@@ -41,14 +41,16 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Test with coverage
-        run: pytest --cov=app --cov-fail-under=80 --cov-report=xml --cov-report=term-missing
+        run: pytest --cov=app --cov-fail-under=80 --cov-report=xml --cov-report=html --cov-report=term-missing
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-report
-          path: coverage.xml
+          path: |
+            coverage.xml
+            htmlcov/
 
   mutation:
     runs-on: ubuntu-latest
@@ -66,3 +68,14 @@ jobs:
 
       - name: Run mutation tests
         run: python scripts/check_mutation_score.py
+
+      - name: Generate mutation HTML report
+        if: always()
+        run: mutmut html
+
+      - name: Upload mutation report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation-report
+          path: html/
