@@ -174,10 +174,10 @@ Feature: WhatsApp URL builder
 
 ### T-07 · CI pipeline
 
-- [ ] Add `.github/workflows/ci.yml`
-- [ ] Steps: install deps → ruff lint → pytest
-- [ ] Pipeline runs on every push and pull request to `main`
-- [ ] No paid GitHub Actions minutes required (public repo uses free tier)
+- [x] Add `.github/workflows/ci.yml`
+- [x] Steps: install deps → ruff lint → pytest
+- [x] Pipeline runs on every push and pull request to `main`
+- [x] No paid GitHub Actions minutes required (public repo uses free tier)
 
 ---
 
