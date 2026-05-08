@@ -181,6 +181,16 @@ Feature: WhatsApp URL builder
 
 ---
 
+### T-15 · Dark mode support
+
+- [ ] Implement dark mode using Tailwind CSS `dark:` classes
+- [ ] Add a theme toggle switch (Sun/Moon icon)
+- [ ] Persist theme preference in `localStorage`
+- [ ] Respect system-level color scheme preference (`prefers-color-scheme`)
+- [ ] Ensure all components (inputs, dropdowns, buttons) are accessible in dark mode
+
+---
+
 ## Milestone 3 — Future SaaS
 
 > These tasks are not scheduled. Listed for architectural awareness.
