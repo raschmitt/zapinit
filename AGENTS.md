@@ -134,6 +134,35 @@ Additional rules:
 - All CI checks must pass before merging
 - Never force-push to a PR branch after review has started
 
+**Resolving review comments:** After addressing a review comment, resolve its thread via the GraphQL API:
+
+```bash
+# 1. Find the thread node ID
+gh api graphql -f query='
+{
+  repository(owner: "raschmitt", name: "zapinit") {
+    pullRequest(number: <PR>) {
+      reviewThreads(first: 20) {
+        nodes {
+          id
+          comments(first: 1) { nodes { databaseId } }
+        }
+      }
+    }
+  }
+}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.comments.nodes[0].databaseId == <COMMENT_ID>) | .id'
+
+# 2. Resolve the thread
+gh api graphql -f query='
+mutation {
+  resolveReviewThread(input: { threadId: "<THREAD_NODE_ID>" }) {
+    thread { isResolved }
+  }
+}'
+```
+
+The REST API does not support resolving threads — GraphQL is required.
+
 ---
 
 ## Testing Requirements
