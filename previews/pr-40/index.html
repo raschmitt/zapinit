@@ -78,10 +78,7 @@
 
     </div>
 
-    <!-- NOSONAR: loaded from a trusted CDN (jsdelivr.net) without SRI intentionally — pinning an exact
-         version + hash would require a manual update on every patch release. The same CDN-without-SRI
-         pattern is already in use for Tailwind on line 7; both are accepted project-wide trade-offs. -->
-    <script src="https://cdn.jsdelivr.net/npm/libphonenumber-js@1/bundle/libphonenumber-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/libphonenumber-js@1/bundle/libphonenumber-min.js"></script> <!-- NOSONAR: loaded from a trusted CDN (jsdelivr.net) without SRI intentionally — pinning an exact version + hash would require a manual update on every patch release; same pattern used for Tailwind on line 7 -->
     <script src="./js/app.js"></script>
 </body>
 </html>
