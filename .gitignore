@@ -38,9 +38,10 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Gemini CLI local agents
+# Local agent instructions
 AGENTS.local.md
-GEMINI.md
+.gemini/
+.claude/
 
 # mutmut
 .mutmut-cache
