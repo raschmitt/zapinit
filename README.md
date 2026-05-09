@@ -9,8 +9,6 @@ Start a WhatsApp conversation with any phone number — no need to save the cont
 
 Enter a phone number, select the country, click **Open on WhatsApp**, and you're redirected straight to a chat in WhatsApp Web.
 
-**Live site:** https://raschmitt.github.io/zapinit/
-
 ## Deployments
 
 | Environment | URL | Trigger |
