@@ -165,6 +165,39 @@ Feature: WhatsApp redirect
 
 ---
 
+### T-27 · Gemini fix loop on AI review and workflow failures
+
+Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
+
+- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
+- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
+- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
+- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
+- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
+- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
+
+**Notes:**
+- Gemini should be given `AGENTS.md` as context so fixes respect project standards
+- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
+- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
+
+---
+
+### T-28 · Auto-merge automation-driven PRs
+
+Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
+
+- [ ] Initially: post a comment on the PR indicating it is ready to merge and tag the repo owner for manual review
+- [ ] Later (phase 2): automatically merge the PR using `gh pr merge --squash --auto` once T-27 exits cleanly and all branch protection checks pass
+- [ ] Ensure the merge commit message follows Conventional Commits format
+- [ ] Notify via a final PR comment summarising what was implemented and what CI checks passed
+
+**Notes:**
+- Phase 1 (manual) should be shipped first to build confidence in the automation quality before enabling auto-merge
+- Auto-merge should respect any branch protection rules already in place
+
+---
+
 ### T-25 · Buy Me a Coffee integration
 
 - [ ] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
