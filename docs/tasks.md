@@ -151,6 +151,20 @@ Feature: WhatsApp redirect
 
 ---
 
+### T-26 · AI code review on every PR push
+
+- [ ] Add `.github/workflows/ai-review.yml` that triggers on every `push` event to an open PR (`pull_request` → `synchronize` + `opened`)
+- [ ] Use OpenAI Codex free tier via the `openai/codex` CLI to review the diff introduced by the push
+- [ ] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
+- [ ] Add `OPENAI_API_KEY` to repository secrets
+- [ ] Scope the review to changed files only to stay within free-tier token limits
+
+**Notes:**
+- Run Codex with the diff (`git diff origin/main...HEAD`) as input so the review is focused on new changes
+- Use a hidden HTML marker in the comment (e.g. `<!-- ai-review -->`) to identify and update it on subsequent pushes
+
+---
+
 ### T-25 · Buy Me a Coffee integration
 
 - [ ] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
