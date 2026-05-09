@@ -126,6 +126,14 @@ Feature: WhatsApp redirect
 
 ---
 
+### T-21 · PR preview deployments
+
+- [ ] Add `.github/workflows/preview.yml` that deploys the static page to a temporary URL on each PR open/update
+- [ ] Post the preview URL as a comment on the PR
+- [ ] Tear down the preview when the PR is closed or merged
+
+---
+
 ## Milestone 2 — Quality & CI
 
 ### T-05 · Test suite setup
@@ -174,7 +182,7 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-07 · CI pipeline
+### ~~T-07 · CI pipeline~~
 
 - [x] Add `.github/workflows/ci.yml`
 - [x] Steps: install deps → ruff lint → pytest
@@ -183,7 +191,7 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-16 · Code coverage and mutation testing in CI
+### ~~T-16 · Code coverage and mutation testing in CI~~
 
 - [x] Add `pytest-cov==7.1.0` and `mutmut==2.5.1` to `requirements-dev.txt`
 - [x] Configure coverage in `pyproject.toml`: source = `app/`, fail under **80%**
@@ -201,7 +209,7 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-17 · SonarCloud integration
+### ~~T-17 · SonarCloud integration~~
 
 - [x] Create a SonarCloud account and link the `raschmitt/zapinit` GitHub repository
 - [x] Add `sonar-project.properties` at the repo root with project key, organization, and source/test paths
@@ -216,7 +224,7 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-18 · Security scanning in CI
+### ~~T-18 · Security scanning in CI~~
 
 - [x] Add `pip-audit==2.10.0` and `bandit==1.9.4` to `requirements-dev.txt`
 - [x] Add a `security` job to `.github/workflows/ci.yml` with the following steps:
@@ -232,7 +240,7 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-19 · Dependabot auto-merge
+### ~~T-19 · Dependabot auto-merge~~
 
 - [x] Extend `.github/dependabot.yml` to monitor all ecosystems in use: `pip` and `github-actions` (already present); detect and add `npm` if a `package.json` is introduced
 - [x] Create `.github/workflows/dependabot-auto-merge.yml` that:
