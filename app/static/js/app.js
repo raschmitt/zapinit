@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const stored = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(stored === 'dark' || (!stored && prefersDark));
 
     themeToggle.addEventListener('click', () => {
