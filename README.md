@@ -9,6 +9,15 @@ Start a WhatsApp conversation with any phone number — no need to save the cont
 
 Enter a phone number, select the country, click **Open on WhatsApp**, and you're redirected straight to a chat in WhatsApp Web.
 
+## Deployments
+
+| Environment | URL | Trigger |
+|---|---|---|
+| Production | https://raschmitt.github.io/zapinit/ | Every push to `main` that touches the template or static assets |
+| PR Preview | `https://raschmitt.github.io/zapinit/previews/pr-{number}/` | Every push to an open PR branch — URL posted as a comment on the PR |
+
+Preview deployments are torn down automatically when the PR is closed or merged.
+
 ## Stack
 
 - **Backend:** FastAPI + Jinja2

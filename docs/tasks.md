@@ -134,6 +134,78 @@ Feature: WhatsApp redirect
 
 ---
 
+### T-23 · About section on website
+
+- [ ] Add a brief section below the main input explaining what zapinit does and why it exists
+- [ ] Keep it short — one or two sentences on the use case and the motivation (no need to save a contact just to send a message)
+- [ ] Section must be accessible in both light and dark mode
+
+---
+
+### T-24 · GitHub repo link on website
+
+- [ ] Add a link to the GitHub repository somewhere unobtrusive on the page (e.g. footer or top corner)
+- [ ] Use the GitHub mark SVG icon
+- [ ] Link opens in a new tab
+- [ ] Must be accessible in both light and dark mode
+
+---
+
+### T-26 · AI code review on every PR push
+
+- [ ] Add `.github/workflows/ai-review.yml` that triggers on every `push` event to an open PR (`pull_request` → `synchronize` + `opened`)
+- [ ] Use OpenAI Codex free tier via the `openai/codex` CLI to review the diff introduced by the push
+- [ ] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
+- [ ] Add `OPENAI_API_KEY` to repository secrets
+- [ ] Scope the review to changed files only to stay within free-tier token limits
+
+**Notes:**
+- Run Codex with the diff (`git diff origin/main...HEAD`) as input so the review is focused on new changes
+- Use a hidden HTML marker in the comment (e.g. `<!-- ai-review -->`) to identify and update it on subsequent pushes
+
+---
+
+### T-27 · Gemini fix loop on AI review and workflow failures
+
+Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
+
+- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
+- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
+- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
+- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
+- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
+- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
+
+**Notes:**
+- Gemini should be given `AGENTS.md` as context so fixes respect project standards
+- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
+- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
+
+---
+
+### T-28 · Auto-merge automation-driven PRs
+
+Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
+
+- [ ] Initially: post a comment on the PR indicating it is ready to merge and tag the repo owner for manual review
+- [ ] Later (phase 2): automatically merge the PR using `gh pr merge --squash --auto` once T-27 exits cleanly and all branch protection checks pass
+- [ ] Ensure the merge commit message follows Conventional Commits format
+- [ ] Notify via a final PR comment summarising what was implemented and what CI checks passed
+
+**Notes:**
+- Phase 1 (manual) should be shipped first to build confidence in the automation quality before enabling auto-merge
+- Auto-merge should respect any branch protection rules already in place
+
+---
+
+### T-25 · Buy Me a Coffee integration
+
+- [ ] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
+- [ ] Add the same sponsor link to the README under a dedicated `## Support` section
+- [ ] Button should be visually consistent with the page style and work in both light and dark mode
+
+---
+
 ## Milestone 2 — Quality & CI
 
 ### T-05 · Test suite setup
@@ -254,6 +326,22 @@ Feature: WhatsApp URL builder
 - Project currently uses `pip` and `github-actions` ecosystems — no `npm` present
 - Major version updates require manual review; the workflow must parse the version bump from the Dependabot PR metadata to enforce this
 - `GITHUB_TOKEN` is sufficient — no PAT required as long as branch protection allows the token to merge
+
+---
+
+### T-22 · Automated task implementation workflow
+
+- [ ] Add `.github/workflows/auto-implement.yml` scheduled every 6 hours (`cron: '0 */6 * * *'`)
+- [ ] Workflow reads `docs/tasks.md`, identifies the next unchecked `[ ]` task in order, and skips tasks with unmet pre-conditions
+- [ ] Invokes Gemini CLI in YOLO mode (`gemini --yolo`) with a prompt that includes `AGENTS.md`, `docs/tasks.md`, and `docs/architecture.md` as context so it follows project standards
+- [ ] Gemini creates a feature branch, implements the task, and opens a PR following the branch naming and PR template conventions in `AGENTS.md`
+- [ ] Workflow posts a summary comment on the opened PR indicating it was auto-generated
+- [ ] Add `GEMINI_API_KEY` to repository secrets
+
+**Notes:**
+- YOLO mode allows Gemini to run shell commands and edit files without confirmation prompts
+- The workflow must skip a task if an open PR already references it (by task ID in the PR title or branch name) or if a branch for it already exists — both checks required for idempotency
+- Auto-generated PRs still go through the full CI pipeline before any merge
 
 ---
 
