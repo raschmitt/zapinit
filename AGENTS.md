@@ -142,7 +142,7 @@ gh api graphql -f query='
 {
   repository(owner: "raschmitt", name: "zapinit") {
     pullRequest(number: <PR>) {
-      reviewThreads(first: 20) {
+      reviewThreads(first: 100) {
         nodes {
           id
           comments(first: 1) { nodes { databaseId } }
