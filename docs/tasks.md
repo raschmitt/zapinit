@@ -329,14 +329,14 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-22 · Automated task implementation workflow
+### ~~T-22 · Automated task implementation workflow~~
 
-- [ ] Add `.github/workflows/auto-implement.yml` scheduled every 6 hours (`cron: '0 */6 * * *'`)
-- [ ] Workflow reads `docs/tasks.md`, identifies the next unchecked `[ ]` task in order, and skips tasks with unmet pre-conditions
-- [ ] Invokes Gemini CLI in YOLO mode (`gemini --yolo`) with a prompt that includes `AGENTS.md`, `docs/tasks.md`, and `docs/architecture.md` as context so it follows project standards
-- [ ] Gemini creates a feature branch, implements the task, and opens a PR following the branch naming and PR template conventions in `AGENTS.md`
-- [ ] Workflow posts a summary comment on the opened PR indicating it was auto-generated
-- [ ] Add `GEMINI_API_KEY` to repository secrets
+- [x] Add `.github/workflows/auto-implement.yml` scheduled every 6 hours (`cron: '0 */6 * * *'`)
+- [x] Workflow reads `docs/tasks.md`, identifies the next unchecked `[ ]` task in order, and skips tasks with unmet pre-conditions
+- [x] Invokes Gemini CLI in YOLO mode (`gemini --yolo`) with a prompt that includes `AGENTS.md`, `docs/tasks.md`, and `docs/architecture.md` as context so it follows project standards
+- [x] Gemini creates a feature branch, implements the task, and opens a PR following the branch naming and PR template conventions in `AGENTS.md`
+- [x] Workflow posts a summary comment on the opened PR indicating it was auto-generated
+- [x] Add `GEMINI_API_KEY` to repository secrets (manual: add to GitHub repo Settings → Secrets)
 
 **Notes:**
 - YOLO mode allows Gemini to run shell commands and edit files without confirmation prompts
