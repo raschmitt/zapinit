@@ -77,8 +77,28 @@ const COUNTRIES = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+
+    function applyTheme(dark) {
+        document.documentElement.classList.toggle('dark', dark);
+        sunIcon.classList.toggle('hidden', !dark);
+        moonIcon.classList.toggle('hidden', dark);
+    }
+
+    const stored = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(stored === 'dark' || (!stored && prefersDark));
+
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        applyTheme(!isDark);
+    });
+
     const select = document.getElementById('country');
-    
+
     // Always default to Brazil (BR)
     const defaultCountry = 'BR';
 

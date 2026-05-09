@@ -22,3 +22,8 @@ def check_phone_input(response):
 @then('an "Open on WhatsApp" button is visible')
 def check_open_wa_button(response):
     assert "Open on WhatsApp" in response.text
+
+
+@then("a theme toggle button is visible")
+def check_theme_toggle(response):
+    assert 'id="theme-toggle"' in response.text
