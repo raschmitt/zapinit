@@ -268,7 +268,8 @@ Feature: UI localization
 
 **Notes:**
 - Language detection reads `navigator.language` — do not use `navigator.languages` (array) to keep the logic simple
-- Tests should stub `navigator.language` via `Object.defineProperty` and call `globalThis.applyLocale(lang)` directly (passing the detected language string) to avoid full browser rendering
+- Tests should stub `navigator.language` via `Object.defineProperty` and call `globalThis.applyLocale(lang)` directly (passing the detected language string) to avoid full browser rendering for string-mapping coverage
+- At least one test must exercise the actual page-load init path: stub `navigator.language`, trigger the init function (or reload the module), and assert that the UI strings change — this verifies that `navigator.language` is read and `applyLocale` is invoked during startup, not just that `applyLocale` maps strings correctly in isolation
 - The about blurb text is set by T-23; the PT translation is: *"Cansado de salvar um contato só para mandar uma mensagem? Digite um número e abra o WhatsApp na hora, sem contatos, sem bagunça."*
 
 ---
