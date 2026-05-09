@@ -70,13 +70,13 @@ Feature: Country auto-detection
 
 ---
 
-### T-04 · WhatsApp redirect
+### ~~T-04 · WhatsApp redirect~~
 
-- [ ] On button click, read the full number from `intl-tel-input` in E.164 format
-- [ ] Strip the leading `+`
-- [ ] Validate that the number is not empty and has at least 7 digits
-- [ ] Redirect to `https://wa.me/<number>` in a new tab
-- [ ] Show inline error if number is invalid or empty
+- [x] On button click, read the full number from `intl-tel-input` in E.164 format
+- [x] Strip the leading `+`
+- [x] Validate that the number is not empty and has at least 7 digits
+- [x] Redirect to `https://wa.me/<number>` in a new tab
+- [x] Show inline error if number is invalid or empty
 
 **BDD scenarios:**
 
