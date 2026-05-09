@@ -268,7 +268,7 @@ Feature: WhatsApp URL builder
 
 **Notes:**
 - YOLO mode allows Gemini to run shell commands and edit files without confirmation prompts
-- The workflow must guard against running if a branch for the same task already exists (idempotency)
+- The workflow must skip a task if an open PR already references it (by task ID in the PR title or branch name) or if a branch for it already exists — both checks required for idempotency
 - Auto-generated PRs still go through the full CI pipeline before any merge
 
 ---
