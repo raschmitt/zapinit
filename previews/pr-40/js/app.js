@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const countryCode = select.options[select.selectedIndex].dataset.code;
         const parsed = libphonenumber.parsePhoneNumberFromString(raw, countryCode);
 
-        if (!parsed || !parsed.isValid()) {
+        if (!parsed?.isValid()) {
             showError('Invalid phone number');
             return;
         }
