@@ -142,24 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // If the user already typed an international number, use it as-is;
-        // otherwise strip non-digits + leading trunk zero and prepend dial code.
-        let e164Digits;
-        if (raw.startsWith('+')) {
-            e164Digits = raw.slice(1).replace(/\D/g, '');
-        } else if (raw.startsWith('00')) {
-            e164Digits = raw.slice(2).replace(/\D/g, '');
-        } else {
-            const localDigits = raw.replace(/\D/g, '').replace(/^0+/, '');
-            e164Digits = select.value.replace('+', '') + localDigits;
-        }
+        const countryCode = select.options[select.selectedIndex].dataset.code;
+        const parsed = libphonenumber.parsePhoneNumberFromString(raw, countryCode);
 
-        if (e164Digits.length < 7) {
+        if (!parsed || !parsed.isValid()) {
             showError('Invalid phone number');
             return;
         }
 
-        globalThis.open(`https://wa.me/${e164Digits}`, '_blank');
+        globalThis.open(`https://wa.me/${parsed.number.slice(1)}`, '_blank');
     }
 
     openWaBtn.addEventListener('click', openWhatsApp);

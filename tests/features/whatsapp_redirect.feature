@@ -51,3 +51,15 @@ Feature: WhatsApp redirect
     And the user types "07911 123456"
     When the user clicks "Open on WhatsApp"
     Then the browser opens "https://wa.me/447911123456" in a new tab
+
+  Scenario: Significant leading zero in area code is preserved
+    Given the country is set to "Italy (+39)"
+    And the user types "06 1234 5678"
+    When the user clicks "Open on WhatsApp"
+    Then the browser opens "https://wa.me/390612345678" in a new tab
+
+  Scenario: Digits-only international number is not double-prefixed
+    Given the country is set to "United States (+1)"
+    And the user types "14155550100"
+    When the user clicks "Open on WhatsApp"
+    Then the browser opens "https://wa.me/14155550100" in a new tab
