@@ -118,4 +118,45 @@ document.addEventListener('DOMContentLoaded', () => {
         if (c.code === defaultCountry) opt.selected = true;
         select.appendChild(opt);
     });
+
+    const phoneInput = document.getElementById('phone');
+    const openWaBtn = document.getElementById('open-wa');
+    const errorMsg = document.getElementById('error-msg');
+
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove('hidden');
+    }
+
+    function clearError() {
+        errorMsg.textContent = '';
+        errorMsg.classList.add('hidden');
+    }
+
+    function openWhatsApp() {
+        clearError();
+        const raw = phoneInput.value.trim();
+
+        if (!raw) {
+            showError('Please enter a phone number');
+            return;
+        }
+
+        const countryCode = select.options[select.selectedIndex].dataset.code;
+        const normalized = raw.startsWith('00') ? '+' + raw.slice(2) : raw;
+        const parsed = libphonenumber.parsePhoneNumberFromString(normalized, countryCode);
+
+        if (!parsed?.isValid()) {
+            showError('Invalid phone number');
+            return;
+        }
+
+        globalThis.open(`https://wa.me/${parsed.number.slice(1)}`, '_blank', 'noopener,noreferrer');
+    }
+
+    openWaBtn.addEventListener('click', openWhatsApp);
+
+    phoneInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') openWhatsApp();
+    });
 });

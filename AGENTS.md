@@ -144,6 +144,7 @@ Additional rules:
 - Every new helper function must have at least one unit test
 - Every new route must have at least one integration test using `TestClient`
 - Check `docs/tasks.md` — BDD scenarios are already written for each task; implement them, don't skip them
+- Every bug fix must include at least one new test that reproduces the fixed scenario and would have failed before the fix
 
 Run the full suite before opening a PR:
 
@@ -159,6 +160,8 @@ ruff format --check .
 ```
 
 Both must pass with zero errors.
+
+**Lint must be applied locally before every commit.** Run `ruff check . --fix && ruff format .` to auto-fix violations, then re-run the check commands above to confirm zero errors remain.
 
 ---
 

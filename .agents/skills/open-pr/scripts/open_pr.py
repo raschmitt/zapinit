@@ -39,7 +39,10 @@ def open_pr(pr_file: str) -> None:
     required = {"task_id", "task_name", "title", "what", "why"}
     missing = required - data.keys()
     if missing:
-        print(f"Error: missing fields in JSON: {', '.join(sorted(missing))}", file=sys.stderr)
+        print(
+            f"Error: missing fields in JSON: {', '.join(sorted(missing))}",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     body = build_body(data["task_id"], data["task_name"], data["what"], data["why"])
@@ -54,7 +57,17 @@ def open_pr(pr_file: str) -> None:
         sys.exit(1)
 
     result = subprocess.run(
-        ["gh", "pr", "create", "--base", "main", "--title", data["title"], "--body", body],
+        [
+            "gh",
+            "pr",
+            "create",
+            "--base",
+            "main",
+            "--title",
+            data["title"],
+            "--body",
+            body,
+        ],
         capture_output=True,
         text=True,
     )
