@@ -117,20 +117,20 @@ Feature: WhatsApp redirect
 
 ---
 
-### T-14 · GitHub Pages deployment
+### ~~T-14 · GitHub Pages deployment~~
 
-- [ ] Create a static version of the app (move `index.html` to root or `dist/`)
-- [ ] Ensure all assets (`app.js`, CSS) are referenced with relative paths
-- [ ] Add `.github/workflows/deploy.yml` for automated deployment to GH Pages
-- [ ] Verify the app is live at `https://<user>.github.io/zapinit/`
+- [x] Create a static version of the app (move `index.html` to root or `dist/`)
+- [x] Ensure all assets (`app.js`, CSS) are referenced with relative paths
+- [x] Add `.github/workflows/deploy.yml` for automated deployment to GH Pages
+- [x] Verify the app is live at `https://<user>.github.io/zapinit/`
 
 ---
 
-### T-21 · PR preview deployments
+### ~~T-21 · PR preview deployments~~
 
-- [ ] Add `.github/workflows/preview.yml` that deploys the static page to a temporary URL on each PR open/update
-- [ ] Post the preview URL as a comment on the PR
-- [ ] Tear down the preview when the PR is closed or merged
+- [x] Add `.github/workflows/preview.yml` that deploys the static page to a temporary URL on each PR open/update
+- [x] Post the preview URL as a comment on the PR
+- [x] Tear down the preview when the PR is closed or merged
 
 ---
 
