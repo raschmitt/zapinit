@@ -30,6 +30,7 @@ jobs:
       - name: Run agentic task implementation
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_CLI_TRUST_WORKSPACE: true
         run: |
           gemini --yolo -p "
           You are an AI agent working on the zapinit project. Follow these steps in order:
