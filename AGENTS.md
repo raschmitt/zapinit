@@ -160,6 +160,8 @@ ruff format --check .
 
 Both must pass with zero errors.
 
+**Lint must be applied locally before every commit.** Run `ruff check . --fix && ruff format .` to auto-fix violations, then re-run the check commands above to confirm zero errors remain.
+
 ---
 
 ## Task Tracking

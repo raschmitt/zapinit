@@ -12,7 +12,6 @@ import os
 import re
 import subprocess
 import sys
-from pathlib import Path
 
 
 def run_git(args: list[str]) -> str:
@@ -23,7 +22,9 @@ def run_git(args: list[str]) -> str:
         cwd=os.getcwd(),
     )
     if result.returncode != 0:
-        raise RuntimeError((result.stderr or result.stdout).strip() or f"git {' '.join(args)} failed")
+        raise RuntimeError(
+            (result.stderr or result.stdout).strip() or f"git {' '.join(args)} failed"
+        )
     return result.stdout.strip()
 
 
