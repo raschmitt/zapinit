@@ -168,6 +168,7 @@ Both must pass with zero errors.
 
 - Before starting work, find the relevant task and mark it `[-]` (in progress)
 - When the PR is merged, mark it `[x]` (done) in a follow-up commit to `main` via PR, or include it in the same PR
+- When all subtasks under a task heading are marked `[x]`, strike through the task title using `~~Title~~`
 - Do not invent scope beyond what the task describes — if the task is small, the PR should be small
 
 ---
