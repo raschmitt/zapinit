@@ -134,6 +134,31 @@ Feature: WhatsApp redirect
 
 ---
 
+### T-23 · About section on website
+
+- [ ] Add a brief section below the main input explaining what zapinit does and why it exists
+- [ ] Keep it short — one or two sentences on the use case and the motivation (no need to save a contact just to send a message)
+- [ ] Section must be accessible in both light and dark mode
+
+---
+
+### T-24 · GitHub repo link on website
+
+- [ ] Add a link to the GitHub repository somewhere unobtrusive on the page (e.g. footer or top corner)
+- [ ] Use the GitHub mark SVG icon
+- [ ] Link opens in a new tab
+- [ ] Must be accessible in both light and dark mode
+
+---
+
+### T-25 · Buy Me a Coffee integration
+
+- [ ] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
+- [ ] Add the same sponsor link to the README under a dedicated `## Support` section
+- [ ] Button should be visually consistent with the page style and work in both light and dark mode
+
+---
+
 ## Milestone 2 — Quality & CI
 
 ### T-05 · Test suite setup
