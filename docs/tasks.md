@@ -257,13 +257,13 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-15 · Dark mode support
+### ~~T-15 · Dark mode support~~
 
-- [ ] Implement dark mode using Tailwind CSS `dark:` classes
-- [ ] Add a theme toggle switch (Sun/Moon icon)
-- [ ] Persist theme preference in `localStorage`
-- [ ] Respect system-level color scheme preference (`prefers-color-scheme`)
-- [ ] Ensure all components (inputs, dropdowns, buttons) are accessible in dark mode
+- [x] Implement dark mode using Tailwind CSS `dark:` classes
+- [x] Add a theme toggle switch (Sun/Moon icon)
+- [x] Persist theme preference in `localStorage`
+- [x] Respect system-level color scheme preference (`prefers-color-scheme`)
+- [x] Ensure all components (inputs, dropdowns, buttons) are accessible in dark mode
 
 ---
 
