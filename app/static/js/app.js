@@ -118,4 +118,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (c.code === defaultCountry) opt.selected = true;
         select.appendChild(opt);
     });
+
+    const phoneInput = document.getElementById('phone');
+    const openWaBtn = document.getElementById('open-wa');
+    const errorMsg = document.getElementById('error-msg');
+
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove('hidden');
+    }
+
+    function clearError() {
+        errorMsg.textContent = '';
+        errorMsg.classList.add('hidden');
+    }
+
+    function openWhatsApp() {
+        clearError();
+        const dialCode = select.value.replace('+', '');
+        const digits = phoneInput.value.replace(/\D/g, '');
+
+        if (!digits) {
+            showError('Please enter a phone number');
+            return;
+        }
+        if ((dialCode + digits).length < 7) {
+            showError('Invalid phone number');
+            return;
+        }
+
+        globalThis.open(`https://wa.me/${dialCode}${digits}`, '_blank');
+    }
+
+    openWaBtn.addEventListener('click', openWhatsApp);
+
+    phoneInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') openWhatsApp();
+    });
 });
