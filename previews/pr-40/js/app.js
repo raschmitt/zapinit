@@ -143,7 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const countryCode = select.options[select.selectedIndex].dataset.code;
-        const parsed = libphonenumber.parsePhoneNumberFromString(raw, countryCode);
+        const normalized = raw.startsWith('00') ? '+' + raw.slice(2) : raw;
+        const parsed = libphonenumber.parsePhoneNumberFromString(normalized, countryCode);
 
         if (!parsed?.isValid()) {
             showError('Invalid phone number');
