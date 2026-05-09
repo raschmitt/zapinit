@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        globalThis.open(`https://wa.me/${parsed.number.slice(1)}`, '_blank');
+        globalThis.open(`https://wa.me/${parsed.number.slice(1)}`, '_blank', 'noopener,noreferrer');
     }
 
     openWaBtn.addEventListener('click', openWhatsApp);
