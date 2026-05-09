@@ -44,6 +44,15 @@ def open_pr(pr_file: str) -> None:
 
     body = build_body(data["task_id"], data["task_name"], data["what"], data["why"])
 
+    push = subprocess.run(
+        ["git", "push", "-u", "origin", "HEAD"],
+        capture_output=True,
+        text=True,
+    )
+    if push.returncode != 0:
+        print(f"Error pushing branch:\n{push.stderr}", file=sys.stderr)
+        sys.exit(1)
+
     result = subprocess.run(
         ["gh", "pr", "create", "--base", "main", "--title", data["title"], "--body", body],
         capture_output=True,
