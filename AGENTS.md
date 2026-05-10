@@ -244,3 +244,6 @@ Never commit `.env` files, API keys, tokens, or real phone numbers. If you need 
 
 ### Keep diffs minimal
 A small, focused diff is easier to review and less likely to introduce bugs. Resist the urge to refactor surrounding code unless the task explicitly requires it.
+
+### Design document
+AI agents working on UI tasks must read `docs/DESIGN.md` before making visual changes, and must update it when introducing new components or changing existing ones.
