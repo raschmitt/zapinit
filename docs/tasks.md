@@ -291,7 +291,7 @@ Feature: UI localization
 
 ### T-31 · SVG favicons with light/dark mode support
 
-- [ ] Create two SVG favicons: one for light mode, one for dark mode — both AI-generated and consistent with the design documented in `docs/DESIGN.md` (T-30 must land first)
+- [-] Create two SVG favicons: one for light mode, one for dark mode — both AI-generated and consistent with the design documented in `docs/DESIGN.md` (T-30 must land first)
 - [ ] Light mode favicon: white or light background with the WhatsApp green (`#25D366`) `zap` motif
 - [ ] Dark mode favicon: dark background (`#111827` or similar) with the same green motif so it remains visible against browser chrome in dark mode
 - [ ] Dynamically switch the active favicon based on the current theme (match the theme toggle state stored in `localStorage`, same logic used by the dark mode toggle)

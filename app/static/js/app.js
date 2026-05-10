@@ -76,6 +76,13 @@ const COUNTRIES = [
     { code: 'VN', dial: '+84',  flag: '🇻🇳', name: 'Vietnam' },
 ];
 
+function updateFavicon(dark) {
+    const link = document.getElementById('favicon');
+    if (link) {
+        link.href = dark ? '/static/favicon-dark.svg' : '/static/favicon-light.svg';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     const sunIcon = document.getElementById('sun-icon');
@@ -85,11 +92,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.classList.toggle('dark', dark);
         sunIcon.classList.toggle('hidden', !dark);
         moonIcon.classList.toggle('hidden', dark);
+        updateFavicon(dark);
     }
 
     const stored = localStorage.getItem('theme');
     const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(stored === 'dark' || (!stored && prefersDark));
+
+    globalThis.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches);
+        }
+    });
 
     themeToggle.addEventListener('click', () => {
         const isDark = document.documentElement.classList.contains('dark');
