@@ -81,6 +81,7 @@ Review the PR diff and post a structured review comment.
     - Use the line number from the new (right) version of the file
     - Keep each comment focused on a single issue
     - If no issues found on specific lines, use an empty array: `"comments": []`
+    - **Fallback**: if a finding cannot be pinned to a specific line (e.g. missing test, architectural concern, missing feature), do NOT create an inline comment — include it in the `Issues Found` or `Suggestions` section of the review summary instead
 
 7.  Post the inline review by running:
 
