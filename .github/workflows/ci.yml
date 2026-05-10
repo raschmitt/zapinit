@@ -176,6 +176,10 @@ jobs:
         if: needs.changes.outputs.should_run == 'true'
         run: pip install -r requirements-dev.txt
 
+      - name: Install Playwright browsers
+        if: needs.changes.outputs.should_run == 'true'
+        run: python3 -m playwright install chromium
+
       - name: Run mutation tests
         if: needs.changes.outputs.should_run == 'true'
         run: python scripts/check_mutation_score.py
