@@ -1,3 +1,40 @@
+const i18n = {
+    pt: {
+        buttonLabel: 'Abrir no WhatsApp',
+        phonePlaceholder: 'Número de telefone',
+        errorEmpty: 'Por favor, insira um número de telefone',
+        errorInvalid: 'Número de telefone inválido',
+        aboutBlurb: 'Cansado de salvar um contato só para mandar uma mensagem? Digite um número e abra o WhatsApp na hora, sem contatos, sem bagunça.',
+    },
+    en: {
+        buttonLabel: 'Open on WhatsApp',
+        phonePlaceholder: 'Phone number',
+        errorEmpty: 'Please enter a phone number',
+        errorInvalid: 'Invalid phone number',
+        aboutBlurb: 'Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter.',
+    },
+};
+
+function detectLanguage() {
+    const lang = globalThis.navigator?.language || '';
+    return lang.startsWith('pt') ? 'pt' : 'en';
+}
+
+function applyLocale(lang) {
+    const shortLang = (lang || '').slice(0, 2);
+    const locale = i18n[shortLang] || i18n.en;
+    const btnText = document.getElementById('open-wa-text');
+    const phoneInput = document.getElementById('phone');
+    const aboutBlurb = document.getElementById('about-blurb');
+    if (btnText) btnText.textContent = locale.buttonLabel;
+    if (phoneInput) phoneInput.placeholder = locale.phonePlaceholder;
+    if (aboutBlurb) aboutBlurb.textContent = locale.aboutBlurb;
+    globalThis.__errorEmpty = locale.errorEmpty;
+    globalThis.__errorInvalid = locale.errorInvalid;
+}
+
+globalThis.applyLocale = applyLocale;
+
 const COUNTRIES = [
     { code: 'AF', dial: '+93',  flag: '🇦🇫', name: 'Afghanistan' },
     { code: 'AL', dial: '+355', flag: '🇦🇱', name: 'Albania' },
@@ -97,6 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme(!isDark);
     });
 
+    applyLocale(detectLanguage());
+
     const select = document.getElementById('country');
 
     // Always default to Brazil (BR)
@@ -138,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const raw = phoneInput.value.trim();
 
         if (!raw) {
-            showError('Please enter a phone number');
+            showError(globalThis.__errorEmpty || 'Please enter a phone number');
             return;
         }
 
@@ -147,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parsed = libphonenumber.parsePhoneNumberFromString(normalized, countryCode);
 
         if (!parsed?.isValid()) {
-            showError('Invalid phone number');
+            showError(globalThis.__errorInvalid || 'Invalid phone number');
             return;
         }
 
