@@ -230,6 +230,13 @@ Before referencing a function, class, or file path, confirm it exists. Grep or r
 ### One thing at a time
 Complete one task fully (code + tests + passing CI) before moving to the next. Do not leave half-done changes in a branch.
 
+### Check before re-implementing
+Before implementing a task, check if the expected outputs already exist on `main` — review the expected files for each subtask (features, step defs, helpers, config changes). If all subtasks are already implemented on `main`, do NOT re-implement. Instead:
+- Mark every subtask as `[x]`
+- Strike through the task heading (`~~T-XX · Title~~`)
+- Commit this change
+- Open a PR with title `chore: mark T-XX as done, already implemented`
+
 ### Explain before acting on irreversible changes
 For destructive or hard-to-reverse operations (dropping files, force operations, schema changes), state what you are about to do and why before executing.
 
