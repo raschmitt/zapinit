@@ -126,14 +126,6 @@ Feature: WhatsApp redirect
 
 ---
 
-### ~~T-21 · PR preview deployments~~
-
-- [x] Add `.github/workflows/preview.yml` that deploys the static page to a temporary URL on each PR open/update
-- [x] Post the preview URL as a comment on the PR
-- [x] Tear down the preview when the PR is closed or merged
-
----
-
 ### ~~T-23 · About section on website~~
 
 - [x] Add a brief section below the main input explaining what zapinit does and why it exists
@@ -151,62 +143,21 @@ Feature: WhatsApp redirect
 
 ---
 
-### T-26 · AI code review on every PR push
+### ~~T-15 · Dark mode support~~
 
-- [-] Create `.agents/skills/ai-review/SKILL.md` — skill definition for AI code review using OpenCode CLI
-- [-] Create `.agents/skills/ai-review/scripts/post_review.py` — script to post/update the review comment on the PR
-- [-] Add `.github/workflows/ai-review.yml` that triggers on every PR push (`pull_request` → `synchronize` + `opened`)
-- [-] Use OpenCode CLI with Minimax M2.5 Free model (`opencode/minimax-m2.5-free`) to review the diff introduced by the push
-- [-] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
-- [-] Scope the review to changed files only (`git diff origin/main...HEAD`) to stay within free-tier token limits
-
-**Notes:**
-- Run `git diff origin/main...HEAD` as input so the review is focused on new changes
-- Use a hidden HTML marker `<!-- ai-review -->` in the comment to identify and update it on subsequent pushes
-- The `post_review.py` script finds existing comments by this marker and updates them in-place
-- No API keys required — the Minimax M2.5 Free model is available through OpenCode Zen free tier
-- The review workflow uses `GITHUB_TOKEN` (auto-generated), no additional secrets needed
-
----
-
-### T-27 · Gemini fix loop on AI review and workflow failures
-
-Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
-
-- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
-- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
-- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
-- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
-- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
-- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
-
-**Notes:**
-- Gemini should be given `AGENTS.md` as context so fixes respect project standards
-- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
-- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
-
----
-
-### T-28 · Auto-merge automation-driven PRs
-
-Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
-
-- [ ] Initially: post a comment on the PR indicating it is ready to merge and tag the repo owner for manual review
-- [ ] Later (phase 2): automatically merge the PR using `gh pr merge --squash --auto` once T-27 exits cleanly and all branch protection checks pass
-- [ ] Ensure the merge commit message follows Conventional Commits format
-- [ ] Notify via a final PR comment summarising what was implemented and what CI checks passed
-
-**Notes:**
-- Phase 1 (manual) should be shipped first to build confidence in the automation quality before enabling auto-merge
-- Auto-merge should respect any branch protection rules already in place
+- [x] Implement dark mode using Tailwind CSS `dark:` classes
+- [x] Add a theme toggle switch (Sun/Moon icon)
+- [x] Persist theme preference in `localStorage`
+- [x] Respect system-level color scheme preference (`prefers-color-scheme`)
+- [x] Ensure all components (inputs, dropdowns, buttons) are accessible in dark mode
 
 ---
 
 ### T-25 · Buy Me a Coffee integration
 
-- [ ] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
-- [ ] Add the same sponsor link to the README under a dedicated `## Support` section
-- [ ] Button should be visually consistent with the page style and work in both light and dark mode
+- [-] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
+- [-] Add the same sponsor link to the README under a dedicated `## Support` section
+- [-] Button should be visually consistent with the page style and work in both light and dark mode
 
 ---
 
@@ -388,6 +339,14 @@ Feature: WhatsApp URL builder
 
 ---
 
+### ~~T-21 · PR preview deployments~~
+
+- [x] Add `.github/workflows/preview.yml` that deploys the static page to a temporary URL on each PR open/update
+- [x] Post the preview URL as a comment on the PR
+- [x] Tear down the preview when the PR is closed or merged
+
+---
+
 ### ~~T-16 · Code coverage and mutation testing in CI~~
 
 - [x] Add `pytest-cov==7.1.0` and `mutmut==2.5.1` to `requirements-dev.txt`
@@ -470,13 +429,94 @@ Feature: WhatsApp URL builder
 
 ---
 
-### ~~T-15 · Dark mode support~~
+### T-26 · AI code review on every PR push
 
-- [x] Implement dark mode using Tailwind CSS `dark:` classes
-- [x] Add a theme toggle switch (Sun/Moon icon)
-- [x] Persist theme preference in `localStorage`
-- [x] Respect system-level color scheme preference (`prefers-color-scheme`)
-- [x] Ensure all components (inputs, dropdowns, buttons) are accessible in dark mode
+- [-] Create `.agents/skills/ai-review/SKILL.md` — skill definition for AI code review using OpenCode CLI
+- [-] Create `.agents/skills/ai-review/scripts/post_review.py` — script to post/update the review comment on the PR
+- [-] Add `.github/workflows/ai-review.yml` that triggers on every PR push (`pull_request` → `synchronize` + `opened`)
+- [-] Use OpenCode CLI with Minimax M2.5 Free model (`opencode/minimax-m2.5-free`) to review the diff introduced by the push
+- [-] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
+- [-] Scope the review to changed files only (`git diff origin/main...HEAD`) to stay within free-tier token limits
+
+**Notes:**
+- Run `git diff origin/main...HEAD` as input so the review is focused on new changes
+- Use a hidden HTML marker `<!-- ai-review -->` in the comment to identify and update it on subsequent pushes
+- The `post_review.py` script finds existing comments by this marker and updates them in-place
+- No API keys required — the Minimax M2.5 Free model is available through OpenCode Zen free tier
+- The review workflow uses `GITHUB_TOKEN` (auto-generated), no additional secrets needed
+
+---
+
+### T-27 · Gemini fix loop on AI review and workflow failures
+
+Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
+
+- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
+- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
+- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
+- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
+- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
+- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
+
+**Notes:**
+- Gemini should be given `AGENTS.md` as context so fixes respect project standards
+- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
+- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
+
+---
+
+### T-28 · Auto-merge automation-driven PRs
+
+Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
+
+- [ ] Initially: post a comment on the PR indicating it is ready to merge and tag the repo owner for manual review
+- [ ] Later (phase 2): automatically merge the PR using `gh pr merge --squash --auto` once T-27 exits cleanly and all branch protection checks pass
+- [ ] Ensure the merge commit message follows Conventional Commits format
+- [ ] Notify via a final PR comment summarising what was implemented and what CI checks passed
+
+**Notes:**
+- Phase 1 (manual) should be shipped first to build confidence in the automation quality before enabling auto-merge
+- Auto-merge should respect any branch protection rules already in place
+
+---
+
+### T-32 · Authenticate auto-implement workflow as `raschmitt` and sign commits
+
+Follow-up improvement to T-22. The auto-implement workflow currently runs as `github-actions[bot]`, which means:
+- OpenCode free tier won't comment on its own PRs (only on PRs opened by the paid user)
+- Commits appear as "Unverified" on GitHub
+
+- [ ] Create a GitHub Personal Access Token (classic, scopes: `repo`, `workflow`) for the `raschmitt` account and store it as `GH_PAT` in repository secrets
+- [ ] Create a GPG key, add the public half to the GitHub account (Settings → SSH and GPG keys), and store the private key as `GPG_PRIVATE_KEY` in repository secrets
+- [ ] In `.github/workflows/auto-implement.yml`, replace `GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` with `GH_TOKEN: ${{ secrets.GH_PAT }}`
+- [ ] Add a step before OpenCode runs that imports the GPG key and configures git identity + commit signing:
+  ```yaml
+  - name: Configure git identity and signing
+    run: |
+      echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+      git config user.name "raschmitt"
+      git config user.email "<raschmitt's GitHub email>"
+      git config user.signingkey "$(gpg --list-secret-keys --keyid-format=long | awk '/^sec/ {print $2}' | cut -d'/' -f2)"
+      git config commit.gpgsign true
+  ```
+- [ ] Verify: PRs opened by the workflow are authored by `raschmitt`, commits carry the **Verified** badge, and the `GH_PAT` has the `workflow` scope so `.github/workflows/` changes can be pushed without error
+
+**Notes:**
+- The `workflow` scope on the PAT is required to push workflow file changes (the default `GITHUB_TOKEN` does not support this), which also unblocks tasks like T-26, T-27, T-28
+- GPG key creation: `gpg --full-generate-key` (RSA 4096, no expiry recommended for CI); export with `gpg --armor --export-secret-key <key-id>`
+- The git email must match a verified email on the GitHub account for the Verified badge to appear
+
+---
+
+### T-33 · Manual task selection via `workflow_dispatch`
+
+
+Add a `workflow_dispatch` input to the auto-implement workflow so the user can pick which task to run when triggering manually, while preserving the existing `find-next-task` auto-detect behaviour on scheduled runs.
+
+- [ ] Add an `inputs.task_id` text field to `workflow_dispatch` in `.github/workflows/auto-implement.yml` — accepts a task ID (e.g. `T-26`) or left blank for auto-detect
+- [ ] Pass the input as a `TASK_ID` environment variable to the OpenCode step
+- [ ] Update the OpenCode prompt: if `TASK_ID` is set and non-empty, skip `find-next-task` and use the ID directly; otherwise fall through to existing auto-detect logic
+- [ ] Verify: manual dispatch with a task ID implements that task directly; empty ID or scheduled runs keep the current behaviour
 
 ---
 
