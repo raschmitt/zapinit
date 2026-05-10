@@ -24,16 +24,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Install OpenCode CLI
-        run: npm install -g @opencode/cli
+        run: curl -fsSL https://opencode.ai/install | bash
 
       - name: Run agentic task implementation
         run: |
+          export PATH="$HOME/.opencode/bin:$PATH"
           opencode run -m opencode/big-pickle --dangerously-skip-permissions \
             "You are an AI agent working on the zapinit project. Follow these steps in order:
 
