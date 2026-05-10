@@ -27,3 +27,15 @@ def check_open_wa_button(response):
 @then("a theme toggle button is visible")
 def check_theme_toggle(response):
     assert 'id="theme-toggle"' in response.text
+
+
+@then("a GitHub repository link is visible")
+def check_github_link(response):
+    assert 'id="github-link"' in response.text
+    assert "github.com/raschmitt/zapinit" in response.text
+
+
+@then("the GitHub link opens in a new tab")
+def check_github_link_target(response):
+    assert 'target="_blank"' in response.text
+    assert 'rel="noopener noreferrer"' in response.text
