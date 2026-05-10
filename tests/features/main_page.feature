@@ -10,3 +10,4 @@ Feature: Main page renders correctly
     And the GitHub link opens in a new tab
     And a Buy Me a Coffee link is visible
     And the Buy Me a Coffee link opens in a new tab
+    And a Buy Me a Coffee button is visible below the about text
