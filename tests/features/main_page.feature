@@ -8,3 +8,5 @@ Feature: Main page renders correctly
     And a theme toggle button is visible
     And a GitHub repository link is visible
     And the GitHub link opens in a new tab
+    And a Buy Me a Coffee link is visible
+    And the Buy Me a Coffee link opens in a new tab
