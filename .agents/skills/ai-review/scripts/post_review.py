@@ -27,7 +27,7 @@ def dismiss_old_review(pr_number: str) -> None:
         "api",
         f"repos/{REPO}/pulls/{pr_number}/reviews",
         "--jq",
-        ".[]",
+        ".",
     )
     reviews = json.loads(result.stdout) if result.stdout.strip() else []
     for review in reviews:
