@@ -498,34 +498,10 @@ Follow-up improvement to T-22. The auto-implement workflow currently runs as `gi
 
 Add a `workflow_dispatch` input to the auto-implement workflow so the user can pick which task to run when triggering manually, while preserving the existing `find-next-task` auto-detect behaviour on scheduled runs.
 
-- [ ] Add an `inputs.task_id` field to `workflow_dispatch` in `.github/workflows/auto-implement.yml`:
-  ```yaml
-  workflow_dispatch:
-    inputs:
-      task_id:
-        description: 'Task ID to implement (e.g. T-26). Leave empty to auto-find the next task.'
-        required: false
-        default: ''
-  ```
-- [ ] Pass the input as an environment variable to the OpenCode step:
-  ```yaml
-  - name: Run agentic task implementation
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TASK_ID: ${{ inputs.task_id }}
-  ```
-- [ ] Update the OpenCode prompt so step 1 conditionally skips `find-next-task`:
-  ```
-  1. If the environment variable TASK_ID is set and non-empty, skip step 2 and use TASK_ID to locate the matching task section in docs/tasks.md.
-  2. Otherwise, use the find-next-task skill to identify what to work on by reading:
-     @.agents/skills/find-next-task/SKILL.md
-  3. If no task is available (either TASK_ID refers to a done/nonexistent task, or find-next-task found nothing), stop and print 'No available tasks.' Do not proceed.
-  ```
-- [ ] Verify: manual dispatch with `TASK_ID = T-26` implements that task directly; manual dispatch with empty `TASK_ID` and scheduled runs both fall through to the existing auto-detect behaviour
-
-**Notes:**
-- `inputs.task_id` is empty string (`''`) on scheduled runs and on manual triggers where the field is left blank — no special-casing needed
-- The OpenCode prompt renumbers accordingly (the original step 3 becomes step 4, etc.)
+- [ ] Add an `inputs.task_id` text field to `workflow_dispatch` in `.github/workflows/auto-implement.yml` — accepts a task ID (e.g. `T-26`) or left blank for auto-detect
+- [ ] Pass the input as a `TASK_ID` environment variable to the OpenCode step
+- [ ] Update the OpenCode prompt: if `TASK_ID` is set and non-empty, skip `find-next-task` and use the ID directly; otherwise fall through to existing auto-detect logic
+- [ ] Verify: manual dispatch with a task ID implements that task directly; empty ID or scheduled runs keep the current behaviour
 
 ---
 
