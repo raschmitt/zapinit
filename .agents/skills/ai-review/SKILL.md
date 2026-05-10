@@ -24,7 +24,7 @@ Review the PR diff and post a structured review comment.
     - Missing or inadequate tests (check the `tests/` directory)
     - Edge cases not handled
 
-4.  Save the review to `/tmp/ai-review.md` in this format:
+4.  Save the review summary to `/tmp/ai-review.md` in this format:
 
     ```markdown
     ## AI Code Review
@@ -44,7 +44,31 @@ Review the PR diff and post a structured review comment.
     <!-- ai-review -->
     ```
 
-5.  Post or update the PR comment by running:
+5.  Save inline review comments to `/tmp/ai-review-comments.json`. Each comment
+    must target a specific line in the diff (use `git diff origin/main...HEAD`
+    to verify line numbers). The `side` field is always `"RIGHT"` (the new
+    version of the file):
+
+    ```json
+    {
+      "comments": [
+        {
+          "path": "relative/file/path.py",
+          "line": 42,
+          "side": "RIGHT",
+          "body": "Specific, actionable feedback about this line."
+        }
+      ]
+    }
+    ```
+
+    Rules for inline comments:
+    - Only include comments for lines that actually changed in the diff
+    - Use the line number from the new (right) version of the file
+    - Keep each comment focused on a single issue
+    - If no issues found on specific lines, use an empty array: `"comments": []`
+
+6.  Post the inline review by running:
 
     ```bash
     python3 .agents/skills/ai-review/scripts/post_review.py
