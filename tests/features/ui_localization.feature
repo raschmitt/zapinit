@@ -44,3 +44,12 @@ Feature: UI localization
     And the empty-number error is "Please enter a phone number"
     And the invalid-number error is "Invalid phone number"
     And the about blurb is "Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter."
+
+  Scenario: Language toggle switches between English and Portuguese
+    Given the page starts in English
+    When I click the language toggle
+    Then the button label is "Abrir no WhatsApp"
+    And the toggle text is "PT"
+    When I click the language toggle
+    Then the button label is "Open on WhatsApp"
+    And the toggle text is "EN"

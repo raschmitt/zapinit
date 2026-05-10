@@ -16,6 +16,8 @@ const i18n = {
 };
 
 function detectLanguage() {
+    const saved = localStorage.getItem('lang');
+    if (saved === 'pt' || saved === 'en') return saved;
     const lang = globalThis.navigator?.language || '';
     return lang.startsWith('pt') ? 'pt' : 'en';
 }
@@ -31,6 +33,7 @@ function applyLocale(lang) {
     if (aboutBlurb) aboutBlurb.textContent = locale.aboutBlurb;
     globalThis.__errorEmpty = locale.errorEmpty;
     globalThis.__errorInvalid = locale.errorInvalid;
+    globalThis.__currentLang = shortLang === 'pt' ? 'pt' : 'en';
 }
 
 globalThis.applyLocale = applyLocale;
@@ -135,6 +138,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     applyLocale(detectLanguage());
+
+    const langToggle = document.getElementById('lang-toggle');
+    const langText = document.getElementById('lang-text');
+    if (langText) langText.textContent = globalThis.__currentLang.toUpperCase();
+    if (langToggle) {
+        langToggle.addEventListener('click', () => {
+            const next = globalThis.__currentLang === 'pt' ? 'en' : 'pt';
+            localStorage.setItem('lang', next);
+            applyLocale(next);
+            if (langText) langText.textContent = next.toUpperCase();
+        });
+    }
 
     const select = document.getElementById('country');
 

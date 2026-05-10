@@ -52,6 +52,22 @@ def lang():
     return ""
 
 
+@given("the page starts in English")
+def given_page_english():
+    pass
+
+
+@when("I click the language toggle")
+def click_lang_toggle(page):
+    page.click("#lang-toggle")
+
+
+@then(parsers.parse('the toggle text is "{expected}"'))
+def check_toggle_text(page, expected):
+    text = page.text_content("#lang-text")
+    assert text == expected, f"Expected toggle text '{expected}', got '{text}'"
+
+
 @given(parsers.parse('the browser language is "{lang_code}"'), target_fixture="lang")
 def given_browser_language(lang_code):
     return lang_code
@@ -141,3 +157,37 @@ def test_startup_falls_back_to_english(browser, server_url):
     page, ctx = _init_page(browser, server_url, "fr-FR")
     assert page.text_content("#open-wa-text") == "Open on WhatsApp"
     ctx.close()
+
+
+# --- Toggle tests: verify the language toggle button cycles locales ---
+
+
+def test_toggle_switches_to_portuguese(browser, server_url):
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto(server_url)
+    page.wait_for_load_state("networkidle")
+
+    assert page.text_content("#open-wa-text") == "Open on WhatsApp"
+
+    page.click("#lang-toggle")
+    assert page.text_content("#open-wa-text") == "Abrir no WhatsApp"
+    assert page.text_content("#lang-text") == "PT"
+
+    context.close()
+
+
+def test_toggle_switches_back_to_english(browser, server_url):
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto(server_url)
+    page.wait_for_load_state("networkidle")
+
+    page.click("#lang-toggle")
+    assert page.text_content("#open-wa-text") == "Abrir no WhatsApp"
+
+    page.click("#lang-toggle")
+    assert page.text_content("#open-wa-text") == "Open on WhatsApp"
+    assert page.text_content("#lang-text") == "EN"
+
+    context.close()
