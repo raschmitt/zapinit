@@ -28,7 +28,7 @@ jobs:
 
       - name: Run AI code review
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
