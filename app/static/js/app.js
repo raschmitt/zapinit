@@ -1,3 +1,31 @@
+const i18n = {
+    en: {
+        buttonLabel: 'Open on WhatsApp',
+        phonePlaceholder: 'Phone number',
+        errorEmpty: 'Please enter a phone number',
+        errorInvalid: 'Invalid phone number',
+        aboutText: 'Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter.',
+    },
+    pt: {
+        buttonLabel: 'Abrir no WhatsApp',
+        phonePlaceholder: 'N\u00FAmero de telefone',
+        errorEmpty: 'Por favor, insira um n\u00FAmero de telefone',
+        errorInvalid: 'N\u00FAmero de telefone inv\u00E1lido',
+        aboutText: 'Cansado de salvar um contato s\u00F3 para mandar uma mensagem? Digite um n\u00FAmero e abra o WhatsApp na hora, sem contatos, sem bagun\u00E7a.',
+    },
+};
+
+let currentLocale = i18n.en;
+
+function applyLocale(lang) {
+    currentLocale = lang && lang.startsWith('pt') ? i18n.pt : i18n.en;
+    document.getElementById('button-text').textContent = currentLocale.buttonLabel;
+    document.getElementById('phone').placeholder = currentLocale.phonePlaceholder;
+    document.getElementById('about-text').textContent = currentLocale.aboutText;
+}
+
+globalThis.applyLocale = applyLocale;
+
 const COUNTRIES = [
     { code: 'AF', dial: '+93',  flag: '🇦🇫', name: 'Afghanistan' },
     { code: 'AL', dial: '+355', flag: '🇦🇱', name: 'Albania' },
@@ -97,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme(!isDark);
     });
 
+    const detectedLang = navigator.language;
+    applyLocale(detectedLang);
+
     const select = document.getElementById('country');
 
     // Always default to Brazil (BR)
@@ -138,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const raw = phoneInput.value.trim();
 
         if (!raw) {
-            showError('Please enter a phone number');
+            showError(currentLocale.errorEmpty);
             return;
         }
 
@@ -147,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parsed = libphonenumber.parsePhoneNumberFromString(normalized, countryCode);
 
         if (!parsed?.isValid()) {
-            showError('Invalid phone number');
+            showError(currentLocale.errorInvalid);
             return;
         }
 
