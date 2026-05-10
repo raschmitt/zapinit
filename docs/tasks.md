@@ -126,14 +126,6 @@ Feature: WhatsApp redirect
 
 ---
 
-### ~~T-21 · PR preview deployments~~
-
-- [x] Add `.github/workflows/preview.yml` that deploys the static page to a temporary URL on each PR open/update
-- [x] Post the preview URL as a comment on the PR
-- [x] Tear down the preview when the PR is closed or merged
-
----
-
 ### ~~T-23 · About section on website~~
 
 - [x] Add a brief section below the main input explaining what zapinit does and why it exists
@@ -151,50 +143,13 @@ Feature: WhatsApp redirect
 
 ---
 
-### T-26 · AI code review on every PR push
+### ~~T-15 · Dark mode support~~
 
-- [ ] Add `.github/workflows/ai-review.yml` that triggers on every `push` event to an open PR (`pull_request` → `synchronize` + `opened`)
-- [ ] Use OpenAI Codex free tier via the `openai/codex` CLI to review the diff introduced by the push
-- [ ] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
-- [ ] Add `OPENAI_API_KEY` to repository secrets
-- [ ] Scope the review to changed files only to stay within free-tier token limits
-
-**Notes:**
-- Run Codex with the diff (`git diff origin/main...HEAD`) as input so the review is focused on new changes
-- Use a hidden HTML marker in the comment (e.g. `<!-- ai-review -->`) to identify and update it on subsequent pushes
-
----
-
-### T-27 · Gemini fix loop on AI review and workflow failures
-
-Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
-
-- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
-- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
-- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
-- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
-- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
-- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
-
-**Notes:**
-- Gemini should be given `AGENTS.md` as context so fixes respect project standards
-- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
-- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
-
----
-
-### T-28 · Auto-merge automation-driven PRs
-
-Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
-
-- [ ] Initially: post a comment on the PR indicating it is ready to merge and tag the repo owner for manual review
-- [ ] Later (phase 2): automatically merge the PR using `gh pr merge --squash --auto` once T-27 exits cleanly and all branch protection checks pass
-- [ ] Ensure the merge commit message follows Conventional Commits format
-- [ ] Notify via a final PR comment summarising what was implemented and what CI checks passed
-
-**Notes:**
-- Phase 1 (manual) should be shipped first to build confidence in the automation quality before enabling auto-merge
-- Auto-merge should respect any branch protection rules already in place
+- [x] Implement dark mode using Tailwind CSS `dark:` classes
+- [x] Add a theme toggle switch (Sun/Moon icon)
+- [x] Persist theme preference in `localStorage`
+- [x] Respect system-level color scheme preference (`prefers-color-scheme`)
+- [x] Ensure all components (inputs, dropdowns, buttons) are accessible in dark mode
 
 ---
 
@@ -384,6 +339,14 @@ Feature: WhatsApp URL builder
 
 ---
 
+### ~~T-21 · PR preview deployments~~
+
+- [x] Add `.github/workflows/preview.yml` that deploys the static page to a temporary URL on each PR open/update
+- [x] Post the preview URL as a comment on the PR
+- [x] Tear down the preview when the PR is closed or merged
+
+---
+
 ### ~~T-16 · Code coverage and mutation testing in CI~~
 
 - [x] Add `pytest-cov==7.1.0` and `mutmut==2.5.1` to `requirements-dev.txt`
@@ -466,6 +429,53 @@ Feature: WhatsApp URL builder
 
 ---
 
+### T-26 · AI code review on every PR push
+
+- [ ] Add `.github/workflows/ai-review.yml` that triggers on every `push` event to an open PR (`pull_request` → `synchronize` + `opened`)
+- [ ] Use OpenAI Codex free tier via the `openai/codex` CLI to review the diff introduced by the push
+- [ ] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
+- [ ] Add `OPENAI_API_KEY` to repository secrets
+- [ ] Scope the review to changed files only to stay within free-tier token limits
+
+**Notes:**
+- Run Codex with the diff (`git diff origin/main...HEAD`) as input so the review is focused on new changes
+- Use a hidden HTML marker in the comment (e.g. `<!-- ai-review -->`) to identify and update it on subsequent pushes
+
+---
+
+### T-27 · Gemini fix loop on AI review and workflow failures
+
+Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
+
+- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
+- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
+- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
+- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
+- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
+- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
+
+**Notes:**
+- Gemini should be given `AGENTS.md` as context so fixes respect project standards
+- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
+- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
+
+---
+
+### T-28 · Auto-merge automation-driven PRs
+
+Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
+
+- [ ] Initially: post a comment on the PR indicating it is ready to merge and tag the repo owner for manual review
+- [ ] Later (phase 2): automatically merge the PR using `gh pr merge --squash --auto` once T-27 exits cleanly and all branch protection checks pass
+- [ ] Ensure the merge commit message follows Conventional Commits format
+- [ ] Notify via a final PR comment summarising what was implemented and what CI checks passed
+
+**Notes:**
+- Phase 1 (manual) should be shipped first to build confidence in the automation quality before enabling auto-merge
+- Auto-merge should respect any branch protection rules already in place
+
+---
+
 ### T-32 · Authenticate auto-implement workflow as `raschmitt` and sign commits
 
 Follow-up improvement to T-22. The auto-implement workflow currently runs as `github-actions[bot]`, which means:
@@ -496,22 +506,13 @@ Follow-up improvement to T-22. The auto-implement workflow currently runs as `gi
 
 ### T-33 · Manual task selection via `workflow_dispatch`
 
+
 Add a `workflow_dispatch` input to the auto-implement workflow so the user can pick which task to run when triggering manually, while preserving the existing `find-next-task` auto-detect behaviour on scheduled runs.
 
 - [ ] Add an `inputs.task_id` text field to `workflow_dispatch` in `.github/workflows/auto-implement.yml` — accepts a task ID (e.g. `T-26`) or left blank for auto-detect
 - [ ] Pass the input as a `TASK_ID` environment variable to the OpenCode step
 - [ ] Update the OpenCode prompt: if `TASK_ID` is set and non-empty, skip `find-next-task` and use the ID directly; otherwise fall through to existing auto-detect logic
 - [ ] Verify: manual dispatch with a task ID implements that task directly; empty ID or scheduled runs keep the current behaviour
-
----
-
-### ~~T-15 · Dark mode support~~
-
-- [x] Implement dark mode using Tailwind CSS `dark:` classes
-- [x] Add a theme toggle switch (Sun/Moon icon)
-- [x] Persist theme preference in `localStorage`
-- [x] Respect system-level color scheme preference (`prefers-color-scheme`)
-- [x] Ensure all components (inputs, dropdowns, buttons) are accessible in dark mode
 
 ---
 
