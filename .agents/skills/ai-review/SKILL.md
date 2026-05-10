@@ -13,9 +13,23 @@ Review the PR diff and post a structured review comment.
     git diff origin/main...HEAD
     ```
 
-2.  Read the full content of each changed file to understand context.
+2.  Read the task specification and design references:
 
-3.  Analyze the changes for:
+    ```bash
+    grep -A 50 "### T-26" docs/tasks.md | head -60
+    ```
+
+    Then read the referenced `.md` files for context:
+    - `docs/tasks.md` — find the current task section and verify what it demands
+    - `docs/architecture.md` — check architectural decisions and tech stack
+    - `docs/DESIGN.md` — if it exists, check visual and UX design conventions
+
+3.  Read the full content of each changed file to understand context.
+
+4.  Analyze the changes for:
+    - **Task compliance** — does the PR deliver what `docs/tasks.md` asks for? Are all subtasks implemented?
+    - **Architectural fit** — does the implementation follow `docs/architecture.md`? (tech stack, vendor choices, design decisions)
+    - **Design consistency** — if `docs/DESIGN.md` exists and the PR touches UI, does it follow the documented design?
     - Logic errors and potential bugs
     - Security vulnerabilities
     - Code quality and maintainability issues
@@ -24,7 +38,7 @@ Review the PR diff and post a structured review comment.
     - Missing or inadequate tests (check the `tests/` directory)
     - Edge cases not handled
 
-4.  Save the review summary to `/tmp/ai-review.md` in this format:
+5.  Save the review summary to `/tmp/ai-review.md` in this format:
 
     ```markdown
     ## AI Code Review
@@ -44,7 +58,7 @@ Review the PR diff and post a structured review comment.
     <!-- ai-review -->
     ```
 
-5.  Save inline review comments to `/tmp/ai-review-comments.json`. Each comment
+6.  Save inline review comments to `/tmp/ai-review-comments.json`. Each comment
     must target a specific line in the diff (use `git diff origin/main...HEAD`
     to verify line numbers). The `side` field is always `"RIGHT"` (the new
     version of the file):
@@ -68,7 +82,7 @@ Review the PR diff and post a structured review comment.
     - Keep each comment focused on a single issue
     - If no issues found on specific lines, use an empty array: `"comments": []`
 
-6.  Post the inline review by running:
+7.  Post the inline review by running:
 
     ```bash
     python3 .agents/skills/ai-review/scripts/post_review.py
