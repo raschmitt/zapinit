@@ -155,9 +155,9 @@ Feature: WhatsApp redirect
 
 ### T-25 · Buy Me a Coffee integration
 
-- [ ] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
-- [ ] Add the same sponsor link to the README under a dedicated `## Support` section
-- [ ] Button should be visually consistent with the page style and work in both light and dark mode
+- [-] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
+- [-] Add the same sponsor link to the README under a dedicated `## Support` section
+- [-] Button should be visually consistent with the page style and work in both light and dark mode
 
 ---
 
