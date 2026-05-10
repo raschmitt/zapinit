@@ -142,7 +142,7 @@ Feature: WhatsApp redirect
 
 ---
 
-### T-24 · GitHub repo link on website
+### ~~T-24 · GitHub repo link on website~~
 
 - [x] Add a link to the GitHub repository somewhere unobtrusive on the page (e.g. footer or top corner)
 - [x] Use the GitHub mark SVG icon
