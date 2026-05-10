@@ -134,11 +134,11 @@ Feature: WhatsApp redirect
 
 ---
 
-### T-23 · About section on website
+### ~~T-23 · About section on website~~
 
-- [ ] Add a brief section below the main input explaining what zapinit does and why it exists
-- [ ] Keep it short — one or two sentences on the use case and the motivation (no need to save a contact just to send a message)
-- [ ] Section must be accessible in both light and dark mode
+- [x] Add a brief section below the main input explaining what zapinit does and why it exists
+- [x] Keep it short — one or two sentences on the use case and the motivation (no need to save a contact just to send a message)
+- [x] Section must be accessible in both light and dark mode
 
 ---
 
