@@ -70,13 +70,13 @@ Feature: Country auto-detection
 
 ---
 
-### T-04 · WhatsApp redirect
+### ~~T-04 · WhatsApp redirect~~
 
-- [ ] On button click, read the full number from `intl-tel-input` in E.164 format
-- [ ] Strip the leading `+`
-- [ ] Validate that the number is not empty and has at least 7 digits
-- [ ] Redirect to `https://wa.me/<number>` in a new tab
-- [ ] Show inline error if number is invalid or empty
+- [x] On button click, read the full number from `intl-tel-input` in E.164 format
+- [x] Strip the leading `+`
+- [x] Validate that the number is not empty and has at least 7 digits
+- [x] Redirect to `https://wa.me/<number>` in a new tab
+- [x] Show inline error if number is invalid or empty
 
 **BDD scenarios:**
 
@@ -134,11 +134,11 @@ Feature: WhatsApp redirect
 
 ---
 
-### T-23 · About section on website
+### ~~T-23 · About section on website~~
 
-- [ ] Add a brief section below the main input explaining what zapinit does and why it exists
-- [ ] Keep it short — one or two sentences on the use case and the motivation (no need to save a contact just to send a message)
-- [ ] Section must be accessible in both light and dark mode
+- [x] Add a brief section below the main input explaining what zapinit does and why it exists
+- [x] Keep it short — one or two sentences on the use case and the motivation (no need to save a contact just to send a message)
+- [x] Section must be accessible in both light and dark mode
 
 ---
 
