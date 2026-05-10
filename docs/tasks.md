@@ -206,6 +206,74 @@ Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
 
 ---
 
+### T-29 · UI localization (PT / EN)
+
+- [ ] Detect browser language via `navigator.language` on page load
+- [ ] If the language starts with `"pt"` (e.g. `pt-BR`, `pt-PT`), apply Portuguese strings; otherwise default to English
+- [ ] No other languages required
+- [ ] Localised strings must cover all user-visible text: button label, input placeholder, both error messages, and the about blurb
+- [ ] Add a `i18n` object in `app.js` keyed by locale (`"pt"` / `"en"`) and apply it via a single `applyLocale(lang)` function so adding new locales later requires only a new key
+- [ ] Expose `applyLocale` on `globalThis` to allow test stubs to call it directly
+
+**BDD scenarios:**
+
+```gherkin
+Feature: UI localization
+
+  Scenario: Browser language is Portuguese (Brazil)
+    Given the browser language is "pt-BR"
+    When the page loads
+    Then the button label is "Abrir no WhatsApp"
+    And the phone input placeholder is "Número de telefone"
+    And the empty-number error is "Por favor, insira um número de telefone"
+    And the invalid-number error is "Número de telefone inválido"
+    And the about blurb is "Cansado de salvar um contato só para mandar uma mensagem? Digite um número e abra o WhatsApp na hora, sem contatos, sem bagunça."
+
+  Scenario: Browser language is Portuguese (Portugal)
+    Given the browser language is "pt-PT"
+    When the page loads
+    Then the button label is "Abrir no WhatsApp"
+    And the phone input placeholder is "Número de telefone"
+    And the empty-number error is "Por favor, insira um número de telefone"
+    And the invalid-number error is "Número de telefone inválido"
+    And the about blurb is "Cansado de salvar um contato só para mandar uma mensagem? Digite um número e abra o WhatsApp na hora, sem contatos, sem bagunça."
+
+  Scenario: Browser language is English
+    Given the browser language is "en-US"
+    When the page loads
+    Then the button label is "Open on WhatsApp"
+    And the phone input placeholder is "Phone number"
+    And the empty-number error is "Please enter a phone number"
+    And the invalid-number error is "Invalid phone number"
+    And the about blurb is "Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter."
+
+  Scenario: Browser language is unsupported (falls back to English)
+    Given the browser language is "fr-FR"
+    When the page loads
+    Then the button label is "Open on WhatsApp"
+    And the phone input placeholder is "Phone number"
+    And the empty-number error is "Please enter a phone number"
+    And the invalid-number error is "Invalid phone number"
+    And the about blurb is "Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter."
+
+  Scenario: Browser language is not set (falls back to English)
+    Given the browser language is not set
+    When the page loads
+    Then the button label is "Open on WhatsApp"
+    And the phone input placeholder is "Phone number"
+    And the empty-number error is "Please enter a phone number"
+    And the invalid-number error is "Invalid phone number"
+    And the about blurb is "Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter."
+```
+
+**Notes:**
+- Language detection reads `navigator.language` — do not use `navigator.languages` (array) to keep the logic simple
+- Tests should stub `navigator.language` via `Object.defineProperty` and call `globalThis.applyLocale(lang)` directly (passing the detected language string) to avoid full browser rendering for string-mapping coverage
+- At least one test must exercise the actual page-load init path: stub `navigator.language`, trigger the init function (or reload the module), and assert that the UI strings change — this verifies that `navigator.language` is read and `applyLocale` is invoked during startup, not just that `applyLocale` maps strings correctly in isolation
+- The about blurb text is set by T-23; the PT translation is: *"Cansado de salvar um contato só para mandar uma mensagem? Digite um número e abra o WhatsApp na hora, sem contatos, sem bagunça."*
+
+---
+
 ## Milestone 2 — Quality & CI
 
 ### T-05 · Test suite setup
