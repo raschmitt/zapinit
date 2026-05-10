@@ -28,6 +28,8 @@ jobs:
         run: curl -fsSL https://opencode.ai/install | bash
 
       - name: Run agentic task implementation
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
           opencode run -m opencode/big-pickle --dangerously-skip-permissions \
