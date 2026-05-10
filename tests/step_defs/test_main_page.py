@@ -1,3 +1,5 @@
+import re
+
 from fastapi.testclient import TestClient
 from pytest_bdd import given, scenarios, then
 
@@ -37,5 +39,7 @@ def check_github_link(response):
 
 @then("the GitHub link opens in a new tab")
 def check_github_link_target(response):
-    assert 'target="_blank"' in response.text
-    assert 'rel="noopener noreferrer"' in response.text
+    match = re.search(r'<a[^>]*id="github-link"[^>]*>', response.text)
+    assert match, "GitHub link element not found"
+    assert 'target="_blank"' in match.group()
+    assert 'rel="noopener noreferrer"' in match.group()
