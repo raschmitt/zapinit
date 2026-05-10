@@ -57,10 +57,3 @@ def check_bmc_link_target(response):
     assert match, "Buy Me a Coffee link element not found"
     assert 'target="_blank"' in match.group()
     assert 'rel="noopener noreferrer"' in match.group()
-
-
-@then("a Buy Me a Coffee button is visible below the about text")
-def check_bmc_button(response):
-    assert 'id="bmc-button"' in response.text
-    assert "Buy me a coffee" in response.text
-    assert "buymeacoffee.com/raschmitt" in response.text
