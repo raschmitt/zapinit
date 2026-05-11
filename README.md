@@ -79,6 +79,10 @@ ruff check . --fix
 
 Tests are written using [pytest-bdd](https://pytest-bdd.readthedocs.io/) with Gherkin feature files in `tests/features/` and step definitions in `tests/step_defs/`.
 
+## Support
+
+If you find this project useful, consider [buying me a coffee](https://www.buymeacoffee.com/raschmitt) ☕
+
 ## License
 
 MIT

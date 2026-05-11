@@ -1,0 +1,75 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install OpenCode CLI
+        run: curl -fsSL https://opencode.ai/install | bash
+
+      - name: React with eyes (reviewing)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions -X POST --field content=eyes
+
+      - name: Run AI code review
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          export PATH="$HOME/.opencode/bin:$PATH"
+          opencode run -m opencode/minimax-m2.5-free --dangerously-skip-permissions \
+            "Review the PR diff by following the instructions in:
+             @.agents/skills/ai-review/SKILL.md
+
+             The PR number is in the PR_NUMBER environment variable.
+             Do NOT modify any files — only review and write /tmp/ai-review.md."
+
+      - name: Post review
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -f /tmp/ai-review.md ]; then
+            python3 .agents/skills/ai-review/scripts/post_review.py
+          else
+            echo "No review file generated — skipping post step"
+          fi
+
+      - name: Manage thumbs-up reaction
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: python3 .agents/skills/ai-review/scripts/manage_reactions.py
+
+      - name: Remove eyes reaction (review done)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REACTION_ID=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions \
+            --jq '.[] | select(.content == "eyes" and .user.login == "github-actions[bot]") | .id')
+          if [ -n "$REACTION_ID" ]; then
+            gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions/$REACTION_ID -X DELETE
+          fi
