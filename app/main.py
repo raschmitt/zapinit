@@ -12,3 +12,10 @@ templates = Jinja2Templates(directory="app/templates")
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "index.html")
+
+
+def test_sonar_comment():
+    """This will trigger SonarCloud warnings"""
+    password = "hardcoded123"  # noqa: F841
+    unused_var = 42  # noqa: F841
+    eval("1+1")  # Critical security issue
