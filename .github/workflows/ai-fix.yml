@@ -1,35 +1,24 @@
 name: AI Fix Loop
-
 on:
   pull_request_review:
     types: [submitted]
-
 permissions:
   contents: write
   pull-requests: write
-
 jobs:
   fix:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main (trusted context)
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install -r requirements-dev.txt
-
       - name: Install OpenCode CLI
         run: curl -fsSL https://opencode.ai/install | bash
-
       - name: Configure git identity and signing
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
@@ -37,117 +26,41 @@ jobs:
           git config user.email "rogerio.schmitt@me.com"
           git config user.signingkey "$(gpg --list-secret-keys --keyid-format=long | awk '/^sec/ {print $2}' | cut -d'/' -f2)"
           git config commit.gpgsign true
-
-      - name: Fetch PR head into worktree
+      - name: Process review comments
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          SHA="${{ github.event.review.commit_id }}"
-          git fetch origin "$SHA"
-          git branch pr-branch "$SHA"
-          git worktree add /tmp/pr-code pr-branch
+          export PATH="$HOME/.opencode/bin:$PATH"
+          opencode run -m opencode/big-pickle --dangerously-skip-permissions \
+            "You are an AI agent processing unresolved review threads on \
+             PR #${{ github.event.pull_request.number }} of raschmitt/zapinit.
 
-      - name: Copy trusted skills into PR worktree
-        run: cp -r .agents /tmp/pr-code/
+             1. Fetch the diff:
+                git diff origin/main...HEAD
 
-      - name: Run fix loop orchestrator
-        id: orchestrator
-        working-directory: /tmp/pr-code
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: python3 .agents/skills/ai-review/scripts/fix_loop.py
+             2. Fetch all unresolved review threads via GraphQL:
+                gh api graphql -f query='
+                  { repository(owner: \"raschmitt\", name: \"zapinit\") {
+                    pullRequest(number: ${{ github.event.pull_request.number }}) {
+                      reviewThreads(first: 100) { nodes {
+                        id isResolved
+                        comments(first: 2) { nodes { body path line } totalCount }
+              } } } } }'
 
-      - name: Run AI fix
-        if: steps.orchestrator.outcome == 'success'
-        working-directory: /tmp/pr-code
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-        run: |
-          if [ -f /tmp/ai-fix-input.json ]; then
-            export PATH="$HOME/.opencode/bin:$PATH"
-            opencode run -m opencode/big-pickle --dangerously-skip-permissions \
-              "Apply fixes for the AI review comments on this PR.
-               Follow the instructions in:
-               @.agents/skills/pr-review-loop/SKILL.md
+             3. For each thread that is unresolved and has no replies
+                (totalCount == 1): decide if it is a valid issue or not.
+                - Valid: fix the code, commit it (include \\\"Co-authored-by: claude <claude@anthropic.com>\\\"),
+                  then resolve the thread with:
+                  gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: \\\"<ID>\\\" }) { thread { isResolved } } }'
+                - Invalid: reply explaining why it is not applicable, using:
+                  gh api graphql -f query='mutation { addPullRequestReviewThreadReply(input: { pullRequestReviewThreadId: \\\"<ID>\\\", body: \\\"<reply>\\\" }) { comment { id } } }'
 
-               The input context is in /tmp/ai-fix-input.json.
-               Write your output to /tmp/ai-fix-output.json.
-               The diff is: git diff origin/main...HEAD
+             4. After processing all threads, push any commits:
+                git push origin HEAD:refs/heads/${{ github.event.pull_request.head.ref }}
 
-               Do NOT modify the fix_loop.py, post_review.py, manage_reactions.py,
-               or any workflow files — only fix code issues flagged by the review."
-          else
-            echo "No input file — nothing to fix"
-          fi
+             5. Check if a PR comment contains the text \"<!-- ai-fix -->\".
+                If the iteration count in that comment is 5 or more, stop.
+                Otherwise, post or update it with the new iteration number.
 
-      - name: Process fix output
-        if: steps.orchestrator.outcome == 'success'
-        working-directory: /tmp/pr-code
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ -f /tmp/ai-fix-output.json ]; then
-            python3 -c "
-import json, os, subprocess
-
-pr = os.environ['PR_NUMBER']
-with open('/tmp/ai-fix-output.json') as f:
-    out = json.load(f)
-
-fixed = out.get('fixed_threads', [])
-replied = out.get('replied_threads', [])
-committed = out.get('committed', False)
-
-for t in fixed:
-    tid = t.get('thread_id')
-    if tid:
-        subprocess.run(
-            ['gh', 'api', 'graphql', '-f',
-             'query=mutation { resolveReviewThread(input: { threadId: \\\"' + tid + '\\\" }) { thread { isResolved } } }'],
-            check=False)
-        print(f'Resolved thread {tid} (fixed)')
-
-for t in replied:
-    tid = t.get('thread_id')
-    reply = t.get('reply', '')
-    if tid and reply:
-        escaped = reply.replace('\\\\', '\\\\\\\\').replace('\"', '\\\\\\\"').replace(chr(10), '\\\\n')
-        subprocess.run(
-            ['gh', 'api', 'graphql', '-f',
-             'query=mutation { addPullRequestReviewThreadReply(input: { pullRequestReviewThreadId: \\\"' + tid + '\\\", body: \\\"' + escaped + '\\\" }) { comment { id } } }'],
-            check=False)
-        print(f'Replied to thread {tid}')
-
-print(f'Processed: {len(fixed)} fixed, {len(replied)} replied, committed={committed}')
-"
-          else:
-            echo "No output file from model"
-          fi
-
-      - name: Push fixes
-        working-directory: /tmp/pr-code
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-        run: |
-          if git status --porcelain | grep -q .; then
-            git add -A
-            git commit -m "fix: apply AI review fixes"
-            git push origin pr-branch:${{ github.event.pull_request.head.ref }}
-            echo "Pushed fixes"
-          else
-            echo "No changes to push"
-          fi
-
-  notify-max-iterations:
-    runs-on: ubuntu-latest
-    needs: [fix]
-    if: failure()
-    steps:
-      - name: Check if max iterations was reached
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          echo "Fix loop failed — check PR #$PR_NUMBER for details"
+             Do NOT modify workflow files (.github/workflows/*) or scripts
+             in .agents/skills/ai-review/scripts/."

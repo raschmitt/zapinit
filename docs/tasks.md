@@ -451,20 +451,14 @@ Feature: WhatsApp URL builder
 
 Closes the feedback loop started by T-22 (auto-implement) and T-26 (AI Code Review).
 
-- [x] Modify `post_review.py` `get_unresolved_positions()` to skip threads with replies (`comments.totalCount > 1`) — prevents re-flagging triaged comments
-- [x] Apply same dedup fix to `manage_reactions.py` `has_open_ai_comments()` for consistent 👍 reaction logic
-- [x] Create `.agents/skills/ai-review/scripts/fix_loop.py` — orchestrator that fetches unresolved threads, CI logs, tracks iteration count, and drives the model
-- [x] Create `.agents/skills/pr-review-loop/SKILL.md` — decision framework for per-thread fix-vs-reply, based on real PR iteration experience
-- [x] Create `.github/workflows/ai-fix.yml` — `workflow_run` trigger on T-26 completion, uses OpenCode with `opencode/big-pickle` model
-- [x] Loop terminates when zero unresolved threads without replies remain
-- [x] Max 5 iterations guard via `<!-- ai-fix -->` counter comment on the PR
-- [x] Only runs on PRs opened by T-22 auto-implement workflow (author check)
+- [x] Modify `post_review.py` dedup and `manage_reactions.py` to skip threads with replies (`comments.totalCount > 1`)
+- [x] Create `.github/workflows/ai-fix.yml` — single-step workflow, triggered by `pull_request_review: [submitted]`, uses `opencode/big-pickle` with inline prompt
+- [x] Model handles everything: fetch threads, fix/reply per thread, resolve via GraphQL, push, iteration counter
+- [x] Max 5 iterations guard via `<!-- ai-fix -->` counter comment
 
 **Notes:**
-- Uses `opencode/big-pickle` model (same as T-22 auto-implement), not the review model
-- T-26 dedup skips threads with replies — T-27 replies to invalid comments and leaves them unresolved, so T-26 won't re-flag them
-- Valid issues are fixed, committed, pushed, and the thread is resolved via GraphQL
-- The loop is self-terminating: if T-27 makes no changes (all threads replied), no push occurs, so T-26 doesn't re-trigger
+- Follows the same simple pattern as T-22 auto-implement — no orchestrator scripts, no skill files
+- T-26 dedup skips threads with replies, preventing re-flagging of triaged comments
 
 ---
 
