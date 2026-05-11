@@ -32,27 +32,13 @@ Review the PR diff and post a structured review comment.
       --jq "[.[] | select(.body | contains(\"<!-- ai-review -->\")) | .body]"
     ```
 
-    Currently open (unresolved) inline comments — **do not raise these again**:
+    Existing inline comments on this PR (already flagged — do not raise these again):
     ```bash
-    gh api graphql -F pr=$PR_NUMBER \
-      -f query='query($pr: Int!) {
-        repository(owner: "raschmitt", name: "zapinit") {
-          pullRequest(number: $pr) {
-            reviewThreads(first: 100) {
-              nodes {
-                isResolved
-                comments(first: 1) {
-                  nodes { path line body }
-                }
-              }
-            }
-          }
-        }
-      }' \
-      --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false) | .comments.nodes[0] | select(.body | contains("<!-- ai-review -->")) | {path, line, body: (.body | split("\n")[0:3] | join("\n"))}]'
+    gh api repos/raschmitt/zapinit/pulls/$PR_NUMBER/comments \
+      --jq '[.[] | select(.body | contains("<!-- ai-review -->")) | {path, line, body: (.body | split("\n")[0:2] | join(" "))}]'
     ```
 
-    Skip any finding that matches an open thread's `path` and `line`. Only raise it if the issue genuinely persists **and** the existing thread is already resolved.
+    Skip any finding whose `path` and `line` already appear in that list. Only raise it again if the existing thread is resolved and the issue genuinely persists.
 
 4.  Read the full content of each changed file to understand context.
 

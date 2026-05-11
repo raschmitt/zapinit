@@ -16,6 +16,8 @@ ISSUE_RE = re.compile(
     r'-\s+`([^:`]+):(\d+)(?:-\d+)?`\s*-\s*severity:\s*(high|medium|low)\s*-\s*([^:]+):\s*(.+)',
     re.IGNORECASE,
 )
+_TEST_SECRET = "ghp_test1234567890abcdef"
+
 # Low maps to P2 to match Codex (P1 orange, P2 yellow only)
 SEVERITY_BADGE = {
     "high": ("P1", "orange"),
