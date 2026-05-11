@@ -24,15 +24,35 @@ Review the PR diff and post a structured review comment.
     - `docs/architecture.md` — check architectural decisions and tech stack
     - `docs/DESIGN.md` — if it exists, check visual and UX design conventions
 
-3.  Check previous reviews on this PR to avoid repeating the same findings:
+3.  Check what has already been flagged on this PR to avoid duplicates.
 
+    Previous review summaries:
     ```bash
-    gh api repos/raschmitt/zapinit/pulls/$PR_NUMBER/reviews --jq "[.[] | select(.body | contains(\"<!-- ai-review -->\")) | .body]"
+    gh api repos/raschmitt/zapinit/pulls/$PR_NUMBER/reviews \
+      --jq "[.[] | select(.body | contains(\"<!-- ai-review -->\")) | .body]"
     ```
 
-    Note what was already flagged in past reviews. When writing the new
-    review, skip issues that were already raised (unless they are still
-    present and unresolved — in that case mention they persist).
+    Currently open (unresolved) inline comments — **do not raise these again**:
+    ```bash
+    gh api graphql -F pr=$PR_NUMBER \
+      -f query='query($pr: Int!) {
+        repository(owner: "raschmitt", name: "zapinit") {
+          pullRequest(number: $pr) {
+            reviewThreads(first: 100) {
+              nodes {
+                isResolved
+                comments(first: 1) {
+                  nodes { path line body }
+                }
+              }
+            }
+          }
+        }
+      }' \
+      --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false) | .comments.nodes[0] | select(.body | contains("<!-- ai-review -->")) | {path, line, body: (.body | split("\n")[0:3] | join("\n"))}]'
+    ```
+
+    Skip any finding that matches an open thread's `path` and `line`. Only raise it if the issue genuinely persists **and** the existing thread is already resolved.
 
 4.  Read the full content of each changed file to understand context.
 

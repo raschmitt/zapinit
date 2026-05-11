@@ -94,7 +94,7 @@ def parse_verdict(text: str) -> str:
 def format_comment(severity: str, title: str, description: str) -> str:
     priority, color = SEVERITY_BADGE.get(severity, ("P2", "yellow"))
     badge = f"![{priority} Badge](https://img.shields.io/badge/{priority}-{color}?style=flat)"
-    return f"**<sub><sub>{badge}</sub></sub>  {title}**\n\n{description}"
+    return f"**<sub><sub>{badge}</sub></sub>  {title}**\n\n{description}\n\n{MARKER}"
 
 
 def build_review_body(commit_id: str) -> str:
@@ -144,6 +144,58 @@ def post_file_comment(pr_number: str, path: str, body: str, commit_id: str) -> N
     )
 
 
+def get_unresolved_positions(pr_number: str) -> tuple[set[tuple[str, int]], set[str]]:
+    """
+    Query GitHub for open (unresolved) review threads that contain our MARKER.
+    Returns:
+        line_positions: {(path, line)} for line-specific unresolved comments
+        file_positions: {path} for file-level unresolved comments
+    """
+    owner, repo_name = REPO.split("/")
+    query = (
+        f'{{ repository(owner: "{owner}", name: "{repo_name}") {{'
+        f" pullRequest(number: {pr_number}) {{"
+        f" reviewThreads(first: 100) {{ nodes {{ isResolved"
+        f" comments(first: 1) {{ nodes {{ body path line }} }} }} }} }} }} }}"
+    )
+    try:
+        result = run_gh("api", "graphql", "-f", f"query={query}")
+    except subprocess.CalledProcessError:
+        print("Warning: could not fetch review threads; skipping dedup check")
+        return set(), set()
+
+    data = json.loads(result.stdout)
+    threads = (
+        data.get("data", {})
+        .get("repository", {})
+        .get("pullRequest", {})
+        .get("reviewThreads", {})
+        .get("nodes", [])
+    )
+
+    line_positions: set[tuple[str, int]] = set()
+    file_positions: set[str] = set()
+    for thread in threads:
+        if thread.get("isResolved"):
+            continue
+        nodes = thread.get("comments", {}).get("nodes", [])
+        if not nodes:
+            continue
+        comment = nodes[0]
+        if MARKER not in comment.get("body", ""):
+            continue
+        path = comment.get("path")
+        line = comment.get("line")
+        if not path:
+            continue
+        if line is not None:
+            line_positions.add((path, int(line)))
+        else:
+            file_positions.add(path)
+
+    return line_positions, file_positions
+
+
 def react_to_pr(pr_number: str, reaction: str) -> None:
     run_gh(
         "api", f"repos/{REPO}/issues/{pr_number}/reactions",
@@ -170,15 +222,22 @@ def main() -> None:
     diff_lines = get_diff_lines(pr_number)
     findings = parse_findings(review_text)
     verdict = parse_verdict(review_text)
+    unresolved_lines, unresolved_files = get_unresolved_positions(pr_number)
 
     line_comments: list[dict] = []
     file_comments: list[tuple[str, str]] = []
 
     for path, line, severity, title, description in findings:
+        if (path, line) in unresolved_lines:
+            print(f"Skipping {path}:{line} — already has an open comment")
+            continue
         body = format_comment(severity, title, description)
         if path in diff_lines and line in diff_lines[path]:
             line_comments.append({"path": path, "line": line, "side": "RIGHT", "body": body})
         elif path in diff_lines:
+            if path in unresolved_files:
+                print(f"Skipping {path} (file-level) — already has an open comment")
+                continue
             file_comments.append((path, body))
         else:
             print(f"Skipping {path}:{line} — file not in diff")
