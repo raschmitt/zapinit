@@ -16,6 +16,9 @@ ISSUE_RE = re.compile(
     r'-\s+`([^:`]+):(\d+)(?:-\d+)?`\s*-\s*severity:\s*(high|medium|low)\s*-\s*([^:]+):\s*(.+)',
     re.IGNORECASE,
 )
+# TESTING ONLY - remove before merge
+_TEST_SECRET = "ghp_test1234567890abcdef"  # noqa
+
 SEVERITY_BADGE = {
     "high": ("P1", "orange"),
     "medium": ("P2", "yellow"),
