@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zapinit</title>
+    <link id="favicon" rel="icon" href="/static/favicon-light.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <script>
+        (function () {
+            const stored = localStorage.getItem('theme');
+            const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (stored === 'dark' || (!stored && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('favicon').href = '/static/favicon-dark.svg';
+            }
+        })();
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                         Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 min-h-screen flex flex-col items-center justify-center px-4 transition-colors">
+
+    <button
+        id="theme-toggle"
+        type="button"
+        aria-label="Toggle dark mode"
+        class="fixed top-4 right-4 p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+    >
+        <svg id="moon-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+        <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+    </button>
+
+    <div class="w-full max-w-xl flex flex-col items-center gap-8">
+
+        <h1 class="text-5xl font-light tracking-tight select-none">
+            <span class="text-[#25D366]">zap</span><span class="text-gray-700 dark:text-gray-300">init</span>
+        </h1>
+
+        <div class="w-full flex items-center px-4 py-3 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md focus-within:shadow-md transition-shadow gap-2">
+            <select
+                id="country"
+                class="outline-none bg-transparent text-gray-700 dark:text-gray-200 text-sm cursor-pointer shrink-0 max-w-[110px]"
+            ></select>
+            <div class="w-px h-5 bg-gray-200 dark:bg-gray-700 shrink-0"></div>
+            <input
+                id="phone"
+                type="tel"
+                placeholder="Phone number"
+                autocomplete="tel"
+                class="flex-1 outline-none text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 text-base bg-transparent min-w-0"
+            />
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 w-full justify-center">
+            <button
+                id="open-wa"
+                type="button"
+                class="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] active:bg-[#18a852] text-white font-medium px-8 py-3 rounded-full transition-colors w-full sm:w-auto"
+            >
+                <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.862L0 24l6.306-1.508A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.592-.476-5.11-1.31l-.361-.214-3.744.895.942-3.638-.235-.374A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+                </svg>
+                Open on WhatsApp
+            </button>
+        </div>
+
+        <p id="error-msg" class="text-red-500 dark:text-red-400 text-sm hidden"></p>
+
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400 max-w-sm leading-relaxed">
+            Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter.
+        </p>
+
+        <div class="fixed bottom-4 right-4 flex items-center gap-1">
+            <a
+                id="bmc-link"
+                href="https://www.buymeacoffee.com/raschmitt"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Buy me a coffee"
+                class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-[#FFDD00] dark:hover:text-[#FFDD00] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M2 21V19H20V21H2ZM20 8V5H22V11H20V10H18V13C18 13.55 17.8 14.02 17.41 14.41C17.02 14.8 16.55 15 16 15H8C7.45 15 6.98 14.8 6.59 14.41C6.2 14.02 6 13.55 6 13V3H17C17.55 3 18.02 3.2 18.41 3.59C18.8 3.98 19 4.45 19 5V8H20ZM8 13H16V5H8V13Z"/>
+                </svg>
+            </a>
+            <a
+                id="github-link"
+                href="https://github.com/raschmitt/zapinit"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View source on GitHub"
+                class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/libphonenumber-js@1/bundle/libphonenumber-min.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+</html>
