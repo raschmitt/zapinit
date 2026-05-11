@@ -81,20 +81,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
 
+    const favicon = document.getElementById('favicon');
+
+    function updateFavicon(dark) {
+        if (favicon) {
+            favicon.href = dark ? './static/favicon-dark.svg' : './static/favicon-light.svg';
+        }
+    }
+    globalThis.updateFavicon = updateFavicon;
+
     function applyTheme(dark) {
         document.documentElement.classList.toggle('dark', dark);
         sunIcon.classList.toggle('hidden', !dark);
         moonIcon.classList.toggle('hidden', dark);
+        updateFavicon(dark);
     }
 
     const stored = localStorage.getItem('theme');
-    const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(stored === 'dark' || (!stored && prefersDark));
+    const colorScheme = globalThis.matchMedia('(prefers-color-scheme: dark)');
+    applyTheme(stored === 'dark' || (!stored && colorScheme.matches));
 
     themeToggle.addEventListener('click', () => {
         const isDark = document.documentElement.classList.contains('dark');
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        const newTheme = isDark ? 'light' : 'dark';
+        localStorage.setItem('theme', newTheme);
+        document.cookie = `theme=${newTheme};path=/;max-age=31536000`;
         applyTheme(!isDark);
+    });
+
+    colorScheme.addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches);
+        }
     });
 
     const select = document.getElementById('country');

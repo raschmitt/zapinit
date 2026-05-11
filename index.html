@@ -4,14 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>zapinit</title>
+    <link id="favicon" rel="icon" type="image/svg+xml" href="./static/favicon-light.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
     <script>
         (function () {
+            const urlParams = new URLSearchParams(globalThis.location.search);
+            const urlTheme = urlParams.get('theme');
+            if (urlTheme === 'dark' || urlTheme === 'light') {
+                localStorage.setItem('theme', urlTheme);
+            }
             const stored = localStorage.getItem('theme');
+            if (stored === 'dark' || stored === 'light') {
+                document.cookie = `theme=${stored};path=/;max-age=31536000`;
+            }
             const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
             if (stored === 'dark' || (!stored && prefersDark)) {
                 document.documentElement.classList.add('dark');
+                const f = document.getElementById('favicon');
+                if (f) f.href = './static/favicon-dark.svg';
             }
         })();
     </script>
