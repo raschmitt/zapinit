@@ -103,10 +103,35 @@ def build_review_body(commit_id: str) -> str:
     )
 
 
-def post_review(pr_number: str, body: str, comments: list[dict], commit_id: str) -> None:
+def find_summary_comment_id(pr_number: str) -> int | None:
+    result = run_gh("api", f"repos/{REPO}/issues/{pr_number}/comments", "--jq", ".")
+    comments = json.loads(result.stdout)
+    for comment in comments:
+        if MARKER in comment.get("body", ""):
+            return comment["id"]
+    return None
+
+
+def post_or_update_summary(pr_number: str, body: str) -> None:
+    existing_id = find_summary_comment_id(pr_number)
+    if existing_id:
+        run_gh("api", f"repos/{REPO}/issues/comments/{existing_id}",
+               "-X", "PATCH", "--input", "-",
+               stdin=json.dumps({"body": body}))
+        print("Updated existing summary comment")
+    else:
+        run_gh("api", f"repos/{REPO}/issues/{pr_number}/comments",
+               "-X", "POST", "--input", "-",
+               stdin=json.dumps({"body": body}))
+        print("Created new summary comment")
+
+
+def post_review(pr_number: str, comments: list[dict], commit_id: str) -> None:
+    if not comments:
+        return
     payload = json.dumps({
         "commit_id": commit_id,
-        "body": body,
+        "body": MARKER,
         "event": "COMMENT",
         "comments": comments,
     })
@@ -223,7 +248,8 @@ def main() -> None:
             print(f"Skipping {path}:{line} — file not in diff")
 
     review_body = build_review_body(commit_id)
-    post_review(pr_number, review_body, line_comments, commit_id)
+    post_or_update_summary(pr_number, review_body)
+    post_review(pr_number, line_comments, commit_id)
     print(f"Posted review: {len(line_comments)} inline comment(s)")
 
     for path, body in file_comments:
