@@ -429,14 +429,14 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-26 · AI code review on every PR push
+### ~~T-26 · AI code review on every PR push~~
 
-- [-] Create `.agents/skills/ai-review/SKILL.md` — skill definition for AI code review using OpenCode CLI
-- [-] Create `.agents/skills/ai-review/scripts/post_review.py` — script to post/update the review comment on the PR
-- [-] Add `.github/workflows/ai-review.yml` that triggers on every PR push (`pull_request` → `synchronize` + `opened`)
-- [-] Use OpenCode CLI with Minimax M2.5 Free model (`opencode/minimax-m2.5-free`) to review the diff introduced by the push
-- [-] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
-- [-] Scope the review to changed files only (`git diff origin/main...HEAD`) to stay within free-tier token limits
+- [x] Create `.agents/skills/ai-review/SKILL.md` — skill definition for AI code review using OpenCode CLI
+- [x] Create `.agents/skills/ai-review/scripts/post_review.py` — script to post/update the review comment on the PR
+- [x] Add `.github/workflows/ai-review.yml` that triggers on every PR push (`pull_request` → `synchronize` + `opened`)
+- [x] Use OpenCode CLI with Minimax M2.5 Free model (`opencode/minimax-m2.5-free`) to review the diff introduced by the push
+- [x] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
+- [x] Scope the review to changed files only (`git diff origin/main...HEAD`) to stay within free-tier token limits
 
 **Notes:**
 - Run `git diff origin/main...HEAD` as input so the review is focused on new changes
