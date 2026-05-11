@@ -42,4 +42,16 @@ jobs:
              @.agents/skills/ai-review/SKILL.md
 
              The PR number is in the PR_NUMBER environment variable.
-             Do NOT modify any files — only review."
+             Do NOT modify any files — only review and write /tmp/ai-review.md."
+
+      - name: Post review
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -f /tmp/ai-review.md ]; then
+            python3 .agents/skills/ai-review/scripts/post_review.py
+          else
+            echo "No review file generated — skipping post step"
+          fi
