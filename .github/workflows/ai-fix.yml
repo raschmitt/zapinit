@@ -29,6 +29,8 @@ jobs:
       - name: Process review comments
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BRANCH_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
           opencode run -m opencode/big-pickle --dangerously-skip-permissions \
@@ -37,7 +39,7 @@ jobs:
              Any new review or comment will trigger this workflow again.
 
              You are an AI agent processing unresolved review threads on \
-             PR #${{ github.event.pull_request.number }} of raschmitt/zapinit.
+             PR #${PR_NUMBER} of raschmitt/zapinit.
 
              1. Fetch the diff:
                 git diff origin/main...HEAD
@@ -45,14 +47,14 @@ jobs:
              2. Fetch all unresolved review threads via GraphQL:
                 gh api graphql -f query='
                   { repository(owner: \"raschmitt\", name: \"zapinit\") {
-                    pullRequest(number: ${{ github.event.pull_request.number }}) {
+                    pullRequest(number: ${PR_NUMBER}) {
                       reviewThreads(first: 100) { nodes {
                         id isResolved
                         comments(first: 2) { nodes { body path line } totalCount }
               } } } } }'
 
              3. Find the iteration counter in PR comments:
-                gh api repos/raschmitt/zapinit/issues/${{ github.event.pull_request.number }}/comments --jq '.'
+                gh api repos/raschmitt/zapinit/issues/${PR_NUMBER}/comments --jq '.'
                 Look for a comment with \"<!-- ai-fix -->\". Extract the iteration
                 number. If >= 5, stop and do nothing. If not found, this is
                 iteration 1.
@@ -68,13 +70,13 @@ jobs:
              6. If code was changed:
                 git add -A
                 git commit -m \"fix: apply review fixes\" -m \"Co-authored-by: claude <claude@anthropic.com>\"
-                git push origin HEAD:refs/heads/${{ github.event.pull_request.head.ref }}
+                git push origin HEAD:refs/heads/${BRANCH_REF}
 
              7. Update the iteration counter:
                 - Find the existing \"<!-- ai-fix -->\" comment by ID
                 - PATCH it with the new iteration number via:
                   gh api repos/raschmitt/zapinit/issues/comments/<ID> -X PATCH -f body=\"<!-- ai-fix --> iteration=N\"
                 - If no existing comment, POST one:
-                  gh api repos/raschmitt/zapinit/issues/${{ github.event.pull_request.number }}/comments -X POST -f body=\"<!-- ai-fix --> iteration=1\"
+                  gh api repos/raschmitt/zapinit/issues/${PR_NUMBER}/comments -X POST -f body=\"<!-- ai-fix --> iteration=1\"
 
              NEVER post new issue comments. NEVER submit a new PR review."
