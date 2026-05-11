@@ -81,10 +81,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
 
+    const favicon = document.getElementById('favicon');
+
+    function updateFavicon(dark) {
+        favicon.href = dark ? '/static/favicon-dark.svg' : '/static/favicon-light.svg';
+    }
+    globalThis.updateFavicon = updateFavicon;
+
     function applyTheme(dark) {
         document.documentElement.classList.toggle('dark', dark);
         sunIcon.classList.toggle('hidden', !dark);
         moonIcon.classList.toggle('hidden', dark);
+        updateFavicon(dark);
     }
 
     const stored = localStorage.getItem('theme');
@@ -95,6 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const isDark = document.documentElement.classList.contains('dark');
         localStorage.setItem('theme', isDark ? 'light' : 'dark');
         applyTheme(!isDark);
+    });
+
+    globalThis.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches);
+        }
     });
 
     const select = document.getElementById('country');
