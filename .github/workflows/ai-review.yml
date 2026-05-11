@@ -55,3 +55,14 @@ jobs:
           else
             echo "No review file generated — skipping post step"
           fi
+
+      - name: Remove eyes reaction (review done)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REACTION_ID=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions \
+            --jq '.[] | select(.content == "eyes" and .user.login == "github-actions[bot]") | .id')
+          if [ -n "$REACTION_ID" ]; then
+            gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions/$REACTION_ID -X DELETE
+          fi
