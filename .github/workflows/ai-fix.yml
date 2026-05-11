@@ -84,7 +84,6 @@ jobs:
               "Apply fixes for the AI review comments on this PR.
                Follow the instructions in:
                @.agents/skills/pr-review-loop/SKILL.md
-               @.agents/skills/ai-fix/SKILL.md
 
                The input context is in /tmp/ai-fix-input.json.
                Write your output to /tmp/ai-fix-output.json.

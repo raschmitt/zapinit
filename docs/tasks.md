@@ -453,7 +453,6 @@ Closes the feedback loop started by T-22 (auto-implement) and T-26 (AI Code Revi
 
 - [x] Modify `post_review.py` `get_unresolved_positions()` to skip threads with replies (`comments.totalCount > 1`) — prevents re-flagging triaged comments
 - [x] Apply same dedup fix to `manage_reactions.py` `has_open_ai_comments()` for consistent 👍 reaction logic
-- [x] Create `.agents/skills/ai-fix/SKILL.md` — skill definition for the fix loop model
 - [x] Create `.agents/skills/ai-review/scripts/fix_loop.py` — orchestrator that fetches unresolved threads, CI logs, tracks iteration count, and drives the model
 - [x] Create `.agents/skills/pr-review-loop/SKILL.md` — decision framework for per-thread fix-vs-reply, based on real PR iteration experience
 - [x] Create `.github/workflows/ai-fix.yml` — `workflow_run` trigger on T-26 completion, uses OpenCode with `opencode/big-pickle` model
