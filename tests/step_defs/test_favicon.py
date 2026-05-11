@@ -32,6 +32,8 @@ def noop_toggle():
 def check_light_favicon(response):
     assert 'id="favicon"' in response.text
     assert 'href="/static/favicon-light.svg"' in response.text
+    favicon_path = Path("app/static/favicon-light.svg")
+    assert favicon_path.exists(), "Light mode favicon SVG file not found"
 
 
 @then("the favicon href points to the dark-mode SVG")
