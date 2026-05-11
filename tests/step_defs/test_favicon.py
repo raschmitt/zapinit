@@ -45,7 +45,7 @@ def check_dark_favicon(response):
 @then("the favicon href updates to the dark-mode SVG without a page reload")
 def check_favicon_update():
     app_js = Path("app/static/js/app.js").read_text()
-    assert "window.updateFavicon = updateFavicon" in app_js
+    assert "globalThis.updateFavicon = updateFavicon" in app_js
     assert "colorScheme.addEventListener('change'" in app_js
     assert "/static/favicon-dark.svg" in app_js
     assert "/static/favicon-light.svg" in app_js
