@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>zapinit</title>
-    <link id="favicon" rel="icon" href="/static/{% if theme == 'dark' %}favicon-dark.svg{% else %}favicon-light.svg{% endif %}">
+    <link id="favicon" rel="icon" href="./static/favicon-light.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
     <script>
@@ -14,7 +14,7 @@
             if (stored === 'dark' || (!stored && prefersDark)) {
                 document.documentElement.classList.add('dark');
                 const f = document.getElementById('favicon');
-                if (f) f.href = '/static/favicon-dark.svg';
+                if (f) f.href = './static/favicon-dark.svg';
             }
         })();
     </script>
