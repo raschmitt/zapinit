@@ -246,13 +246,13 @@ Feature: UI localization
 
 ### T-31 · SVG favicons with light/dark mode support
 
-- [ ] Create two SVG favicons: one for light mode, one for dark mode — both AI-generated and consistent with the design documented in `docs/DESIGN.md` (T-30 must land first)
-- [ ] Light mode favicon: white or light background with the WhatsApp green (`#25D366`) `zap` motif
-- [ ] Dark mode favicon: dark background (`#111827` or similar) with the same green motif so it remains visible against browser chrome in dark mode
-- [ ] Dynamically switch the active favicon based on the current theme (match the theme toggle state stored in `localStorage`, same logic used by the dark mode toggle)
-- [ ] Also respond to `prefers-color-scheme` changes at runtime so the favicon updates without a page reload when the OS theme changes
-- [ ] Place SVG files in `app/static/` and reference them from `<head>` via `<link rel="icon">` tags
-- [ ] No raster fallbacks required — SVG is sufficient for all target browsers
+- [x] Create two SVG favicons: one for light mode, one for dark mode — both AI-generated and consistent with the design documented in `docs/DESIGN.md` (T-30 must land first)
+- [x] Light mode favicon: white or light background with the WhatsApp green (`#25D366`) `zap` motif
+- [x] Dark mode favicon: dark background (`#111827` or similar) with the same green motif so it remains visible against browser chrome in dark mode
+- [x] Dynamically switch the active favicon based on the current theme (match the theme toggle state stored in `localStorage`, same logic used by the dark mode toggle)
+- [x] Also respond to `prefers-color-scheme` changes at runtime so the favicon updates without a page reload when the OS theme changes
+- [x] Place SVG files in `app/static/` and reference them from `<head>` via `<link rel="icon">` tags
+- [x] No raster fallbacks required — SVG is sufficient for all target browsers
 
 **BDD scenarios:**
 
