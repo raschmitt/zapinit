@@ -447,21 +447,25 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-27 · Gemini fix loop on AI review and workflow failures
+### T-27 · AI fix feedback loop
 
-Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
+Closes the feedback loop started by T-22 (auto-implement) and T-26 (AI Code Review).
 
-- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
-- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
-- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
-- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
-- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
-- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
+- [x] Modify `post_review.py` `get_unresolved_positions()` to skip threads with replies (`comments.totalCount > 1`) — prevents re-flagging triaged comments
+- [x] Apply same dedup fix to `manage_reactions.py` `has_open_ai_comments()` for consistent 👍 reaction logic
+- [x] Create `.agents/skills/ai-fix/SKILL.md` — skill definition for the fix loop model
+- [x] Create `.agents/skills/ai-review/scripts/fix_loop.py` — orchestrator that fetches unresolved threads, CI logs, tracks iteration count, and drives the model
+- [x] Create `.agents/skills/pr-review-loop/SKILL.md` — decision framework for per-thread fix-vs-reply, based on real PR iteration experience
+- [x] Create `.github/workflows/ai-fix.yml` — `workflow_run` trigger on T-26 completion, uses OpenCode with `opencode/big-pickle` model
+- [x] Loop terminates when zero unresolved threads without replies remain
+- [x] Max 5 iterations guard via `<!-- ai-fix -->` counter comment on the PR
+- [x] Only runs on PRs opened by T-22 auto-implement workflow (author check)
 
 **Notes:**
-- Gemini should be given `AGENTS.md` as context so fixes respect project standards
-- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
-- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
+- Uses `opencode/big-pickle` model (same as T-22 auto-implement), not the review model
+- T-26 dedup skips threads with replies — T-27 replies to invalid comments and leaves them unresolved, so T-26 won't re-flag them
+- Valid issues are fixed, committed, pushed, and the thread is resolved via GraphQL
+- The loop is self-terminating: if T-27 makes no changes (all threads replied), no push occurs, so T-26 doesn't re-trigger
 
 ---
 

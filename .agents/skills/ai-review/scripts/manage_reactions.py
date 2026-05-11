@@ -29,7 +29,8 @@ def has_open_ai_comments(pr_number: str) -> bool:
         f'{{ repository(owner: "{owner}", name: "{repo_name}") {{'
         f" pullRequest(number: {pr_number}) {{"
         f" reviewThreads(first: 100) {{ nodes {{ isResolved"
-        f" comments(first: 1) {{ nodes {{ body }} }} }} }} }} }} }}"
+        f" comments(first: 2) {{ nodes {{ body }} totalCount }}"
+        f" }} }} }} }} }}"
     )
     try:
         result = run_gh("api", "graphql", "-f", f"query={query}")
@@ -49,7 +50,11 @@ def has_open_ai_comments(pr_number: str) -> bool:
     for thread in threads:
         if thread.get("isResolved"):
             continue
-        nodes = thread.get("comments", {}).get("nodes", [])
+        comments_node = thread.get("comments", {})
+        total_count = comments_node.get("totalCount", 1)
+        if total_count > 1:
+            continue
+        nodes = comments_node.get("nodes", [])
         if nodes and MARKER in nodes[0].get("body", ""):
             return True
     return False

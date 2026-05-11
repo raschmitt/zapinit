@@ -1,0 +1,166 @@
+name: AI Fix Loop
+
+on:
+  workflow_run:
+    workflows: ["AI Code Review"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.pull_requests[0] != null
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.pull_requests[0].head.ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Install OpenCode CLI
+        run: curl -fsSL https://opencode.ai/install | bash
+
+      - name: Configure git identity
+        run: |
+          git config user.name "raschmitt"
+          git config user.email "rogerio.schmitt@me.com"
+
+      - name: Check if PR is auto-implemented
+        id: check_author
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        run: |
+          AUTHOR=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER --jq '.user.login')
+          echo "PR author: $AUTHOR"
+          if [ "$AUTHOR" != "raschmitt" ]; then
+            echo "Skipping — PR not opened by auto-implement workflow"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check if last commit is by bot
+        id: check_bot_commit
+        if: steps.check_author.outputs.skip != 'true'
+        run: |
+          LAST_AUTHOR=$(git log -1 --format='%an')
+          echo "Last commit author: $LAST_AUTHOR"
+          if [ "$LAST_AUTHOR" = "raschmitt" ]; then
+            echo "Last commit is by the automation user — checking if there's work to do"
+          fi
+
+      - name: Run fix loop orchestrator
+        id: orchestrator
+        if: steps.check_author.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        run: python3 .agents/skills/ai-review/scripts/fix_loop.py
+
+      - name: Run AI fix
+        if: steps.orchestrator.outcome == 'success' && steps.check_author.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -f /tmp/ai-fix-input.json ]; then
+            export PATH="$HOME/.opencode/bin:$PATH"
+            opencode run -m opencode/big-pickle --dangerously-skip-permissions \
+              "Apply fixes for the AI review comments on this PR.
+               Follow the instructions in:
+               @.agents/skills/pr-review-loop/SKILL.md
+               @.agents/skills/ai-fix/SKILL.md
+
+               The input context is in /tmp/ai-fix-input.json.
+               Write your output to /tmp/ai-fix-output.json.
+               The diff is: git diff origin/main...HEAD
+
+               Do NOT modify the fix_loop.py, post_review.py, manage_reactions.py,
+               or any workflow files — only fix code issues flagged by the review."
+          else
+            echo "No input file — nothing to fix"
+          fi
+
+      - name: Process fix output
+        if: steps.orchestrator.outcome == 'success' && steps.check_author.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        run: |
+          if [ -f /tmp/ai-fix-output.json ]; then
+            python3 -c "
+import json, os, subprocess
+
+pr = os.environ['PR_NUMBER']
+with open('/tmp/ai-fix-output.json') as f:
+    out = json.load(f)
+
+fixed = out.get('fixed_threads', [])
+replied = out.get('replied_threads', [])
+committed = out.get('committed', False)
+
+for t in fixed:
+    tid = t.get('thread_id')
+    if tid:
+        subprocess.run(
+            ['gh', 'api', 'graphql', '-f',
+             'query=mutation { resolveReviewThread(input: { threadId: \\\"' + tid + '\\\" }) { thread { isResolved } } }'],
+            check=False)
+        print(f'Resolved thread {tid} (fixed)')
+
+for t in replied:
+    tid = t.get('thread_id')
+    reply = t.get('reply', '')
+    if tid and reply:
+        escaped = reply.replace('\\\\', '\\\\\\\\').replace('\"', '\\\\\\\"').replace(chr(10), '\\\\n')
+        subprocess.run(
+            ['gh', 'api', 'graphql', '-f',
+             'query=mutation { addPullRequestReviewThreadReply(input: { pullRequestReviewThreadId: \\\"' + tid + '\\\", body: \\\"' + escaped + '\\\" }) { comment { id } } }'],
+            check=False)
+        print(f'Replied to thread {tid}')
+
+print(f'Processed: {len(fixed)} fixed, {len(replied)} replied, committed={committed}')
+"
+          else:
+            echo "No output file from model"
+          fi
+
+      - name: Push fixes
+        if: steps.check_author.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if git status --porcelain | grep -q .; then
+            git add -A
+            git commit -m "fix: apply AI review fixes"
+            git push origin HEAD:${{ github.event.workflow_run.pull_requests[0].head.ref }}
+            echo "Pushed fixes"
+          else
+            echo "No changes to push"
+          fi
+
+  notify-max-iterations:
+    runs-on: ubuntu-latest
+    needs: [fix]
+    if: failure()
+    steps:
+      - name: Check if max iterations was reached
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          echo "Fix loop failed — check PR #${{ github.event.workflow_run.pull_requests[0].number }} for details"
