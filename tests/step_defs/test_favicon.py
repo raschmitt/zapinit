@@ -8,17 +8,17 @@ scenarios("../features/favicon.feature")
 
 @given('the theme is set to "light"', target_fixture="response")
 def light_theme(client: TestClient):
-    return client.get("/")
+    return client.get("/", params={"theme": "light"})
 
 
 @given('the theme is set to "dark"', target_fixture="response")
 def dark_theme(client: TestClient):
-    return client.get("/")
+    return client.get("/", params={"theme": "dark"})
 
 
-@when("the page loads", target_fixture="response")
-def page_loads(client: TestClient):
-    return client.get("/")
+@when("the page loads")
+def page_loads():
+    pass
 
 
 @when("the user toggles to dark mode")
@@ -35,12 +35,9 @@ def check_light_favicon(response):
 @then("the favicon href points to the dark-mode SVG")
 def check_dark_favicon(response):
     assert 'id="favicon"' in response.text
+    assert 'href="/static/favicon-dark.svg"' in response.text
     favicon_path = Path("app/static/favicon-dark.svg")
     assert favicon_path.exists(), "Dark mode favicon SVG file not found"
-    inline_script = (
-        "document.getElementById('favicon').href = '/static/favicon-dark.svg'"
-    )
-    assert inline_script in response.text
 
 
 @then("the favicon href updates to the dark-mode SVG without a page reload")
