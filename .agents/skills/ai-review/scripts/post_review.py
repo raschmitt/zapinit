@@ -101,14 +101,24 @@ def post_inline_comment(pr_number: str, path: str, line: int, body: str, commit_
     return json.loads(result.stdout)["id"]
 
 
-def add_reactions(comment_id: int, reactions: list[str]) -> None:
-    for reaction in reactions:
-        run_gh(
-            "api", f"repos/{REPO}/pulls/comments/{comment_id}/reactions",
-            "-X", "POST",
-            "--input", "-",
-            stdin=json.dumps({"content": reaction}),
-        )
+def parse_verdict(text: str) -> str:
+    m = re.search(r'### Overall Assessment\s*\n+(.+)', text)
+    if not m:
+        return "unknown"
+    line = m.group(1).strip().lower()
+    for verdict in ("fail", "needs-work", "pass"):
+        if verdict in line:
+            return verdict
+    return "unknown"
+
+
+def react_to_pr(pr_number: str, reaction: str) -> None:
+    run_gh(
+        "api", f"repos/{REPO}/issues/{pr_number}/reactions",
+        "-X", "POST",
+        "--input", "-",
+        stdin=json.dumps({"content": reaction}),
+    )
 
 
 def main() -> None:
@@ -127,6 +137,7 @@ def main() -> None:
     commit_id = get_head_sha(pr_number)
     diff_lines = get_diff_lines(pr_number)
     findings = parse_findings(review_text)
+    verdict = parse_verdict(review_text)
 
     posted = 0
     skipped = 0
@@ -136,10 +147,13 @@ def main() -> None:
             skipped += 1
             continue
         body = format_comment(severity, title, description)
-        comment_id = post_inline_comment(pr_number, path, line, body, commit_id)
-        add_reactions(comment_id, ["eyes", "+1"])
-        print(f"Posted inline comment on {path}:{line} (id={comment_id})")
+        post_inline_comment(pr_number, path, line, body, commit_id)
+        print(f"Posted inline comment on {path}:{line}")
         posted += 1
+
+    if verdict == "pass":
+        react_to_pr(pr_number, "+1")
+        print("Added 👍 reaction to PR (verdict: pass)")
 
     print(f"Done: {posted} inline comment(s) posted, {skipped} skipped (not in diff)")
 

@@ -26,6 +26,11 @@ jobs:
       - name: Install OpenCode CLI
         run: curl -fsSL https://opencode.ai/install | bash
 
+      - name: React with eyes (reviewing)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions -X POST --field content=eyes
+
       - name: Run AI code review
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
