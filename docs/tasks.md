@@ -244,7 +244,7 @@ Feature: UI localization
 
 ---
 
-### T-31 · SVG favicons with light/dark mode support
+### ~~T-31 · SVG favicons with light/dark mode support~~
 
 - [x] Create two SVG favicons: one for light mode, one for dark mode — both AI-generated and consistent with the design documented in `docs/DESIGN.md` (T-30 must land first)
 - [x] Light mode favicon: white or light background with the WhatsApp green (`#25D366`) `zap` motif
