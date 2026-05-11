@@ -9,7 +9,6 @@ import os
 import subprocess
 import sys
 
-MARKER = "<!-- ai-review -->"
 REPO = "raschmitt/zapinit"
 
 
@@ -23,7 +22,7 @@ def run_gh(*args: str, stdin: str | None = None) -> subprocess.CompletedProcess:
     )
 
 
-def has_open_ai_comments(pr_number: str) -> bool:
+def has_open_unresolved_threads(pr_number: str) -> bool:
     owner, repo_name = REPO.split("/")
     query = (
         f'{{ repository(owner: "{owner}", name: "{repo_name}") {{'
@@ -55,7 +54,7 @@ def has_open_ai_comments(pr_number: str) -> bool:
         if total_count > 1:
             continue
         nodes = comments_node.get("nodes", [])
-        if nodes and MARKER in nodes[0].get("body", ""):
+        if nodes:
             return True
     return False
 
@@ -77,7 +76,7 @@ def main() -> None:
         print("PR_NUMBER env var not set", file=sys.stderr)
         sys.exit(1)
 
-    open_comments = has_open_ai_comments(pr_number)
+    open_comments = has_open_unresolved_threads(pr_number)
     existing_id = get_thumbsup_reaction_id(pr_number)
 
     if open_comments:

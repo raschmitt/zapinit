@@ -12,7 +12,6 @@ import re
 import subprocess
 import sys
 
-MARKER = "<!-- ai-review -->"
 FIX_MARKER = "<!-- ai-fix -->"
 REPO = "raschmitt/zapinit"
 INPUT_FILE = "/tmp/ai-fix-input.json"
@@ -68,8 +67,6 @@ def get_unresolved_threads(pr_number: str) -> list[dict]:
         if not nodes:
             continue
         comment = nodes[0]
-        if MARKER not in comment.get("body", ""):
-            continue
         unresolved.append(
             {
                 "thread_id": thread["id"],

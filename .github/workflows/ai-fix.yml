@@ -1,21 +1,16 @@
 name: AI Fix Loop
 
 on:
-  workflow_run:
-    workflows: ["AI Code Review"]
-    types: [completed]
+  pull_request_review:
+    types: [submitted]
 
 permissions:
   contents: write
   pull-requests: write
-  actions: read
 
 jobs:
   fix:
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.conclusion == 'success'
-      && github.event.workflow_run.pull_requests[0] != null
     steps:
       - name: Checkout main (trusted context)
         uses: actions/checkout@v4
@@ -47,7 +42,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          SHA="${{ github.event.workflow_run.head_sha }}"
+          SHA="${{ github.event.review.commit_id }}"
           git fetch origin "$SHA"
           git branch pr-branch "$SHA"
           git worktree add /tmp/pr-code pr-branch
@@ -60,7 +55,7 @@ jobs:
         working-directory: /tmp/pr-code
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
-          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: python3 .agents/skills/ai-review/scripts/fix_loop.py
 
       - name: Run AI fix
@@ -91,7 +86,7 @@ jobs:
         working-directory: /tmp/pr-code
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
-          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           if [ -f /tmp/ai-fix-output.json ]; then
             python3 -c "
@@ -139,7 +134,7 @@ print(f'Processed: {len(fixed)} fixed, {len(replied)} replied, committed={commit
           if git status --porcelain | grep -q .; then
             git add -A
             git commit -m "fix: apply AI review fixes"
-            git push origin pr-branch:${{ github.event.workflow_run.pull_requests[0].head.ref }}
+            git push origin pr-branch:${{ github.event.pull_request.head.ref }}
             echo "Pushed fixes"
           else
             echo "No changes to push"
@@ -153,5 +148,6 @@ print(f'Processed: {len(fixed)} fixed, {len(replied)} replied, committed={commit
       - name: Check if max iterations was reached
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          echo "Fix loop failed — check PR #${{ github.event.workflow_run.pull_requests[0].number }} for details"
+          echo "Fix loop failed — check PR #$PR_NUMBER for details"
