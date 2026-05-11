@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateFavicon(dark) {
         if (favicon) {
-            favicon.href = dark ? '/static/favicon-dark.svg' : '/static/favicon-light.svg';
+            favicon.href = dark ? './static/favicon-dark.svg' : './static/favicon-light.svg';
         }
     }
     window.updateFavicon = updateFavicon;
