@@ -17,10 +17,10 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
       && github.event.workflow_run.pull_requests[0] != null
     steps:
-      - name: Checkout PR branch
+      - name: Checkout main (trusted context)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: main
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
 
@@ -40,8 +40,21 @@ jobs:
           git config user.name "raschmitt"
           git config user.email "rogerio.schmitt@me.com"
 
+      - name: Fetch PR head into worktree
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          git fetch origin "$SHA"
+          git branch pr-branch "$SHA"
+          git worktree add /tmp/pr-code pr-branch
+
+      - name: Copy trusted skills into PR worktree
+        run: cp -r .agents /tmp/pr-code/
+
       - name: Check if PR is auto-implemented
         id: check_author
+        working-directory: /tmp/pr-code
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
@@ -58,6 +71,7 @@ jobs:
       - name: Check if last commit is by bot
         id: check_bot_commit
         if: steps.check_author.outputs.skip != 'true'
+        working-directory: /tmp/pr-code
         run: |
           LAST_AUTHOR=$(git log -1 --format='%an')
           echo "Last commit author: $LAST_AUTHOR"
@@ -68,6 +82,7 @@ jobs:
       - name: Run fix loop orchestrator
         id: orchestrator
         if: steps.check_author.outputs.skip != 'true'
+        working-directory: /tmp/pr-code
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
@@ -75,6 +90,7 @@ jobs:
 
       - name: Run AI fix
         if: steps.orchestrator.outcome == 'success' && steps.check_author.outputs.skip != 'true'
+        working-directory: /tmp/pr-code
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
@@ -97,6 +113,7 @@ jobs:
 
       - name: Process fix output
         if: steps.orchestrator.outcome == 'success' && steps.check_author.outputs.skip != 'true'
+        working-directory: /tmp/pr-code
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
@@ -141,13 +158,14 @@ print(f'Processed: {len(fixed)} fixed, {len(replied)} replied, committed={commit
 
       - name: Push fixes
         if: steps.check_author.outputs.skip != 'true'
+        working-directory: /tmp/pr-code
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           if git status --porcelain | grep -q .; then
             git add -A
             git commit -m "fix: apply AI review fixes"
-            git push origin HEAD:${{ github.event.workflow_run.pull_requests[0].head.ref }}
+            git push origin pr-branch:${{ github.event.workflow_run.pull_requests[0].head.ref }}
             echo "Pushed fixes"
           else
             echo "No changes to push"
