@@ -153,11 +153,11 @@ Feature: WhatsApp redirect
 
 ---
 
-### T-25 · Buy Me a Coffee integration
+### ~~T-25 · Buy Me a Coffee integration~~
 
-- [-] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
-- [-] Add the same sponsor link to the README under a dedicated `## Support` section
-- [-] Button should be visually consistent with the page style and work in both light and dark mode
+- [x] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
+- [x] Add the same sponsor link to the README under a dedicated `## Support` section
+- [x] Button should be visually consistent with the page style and work in both light and dark mode
 
 ---
 
@@ -229,13 +229,13 @@ Feature: UI localization
 
 ---
 
-### T-30 · DESIGN.md — living design document
+### ~~T-30 · DESIGN.md — living design document~~
 
-- [ ] Create `docs/DESIGN.md` documenting the current visual and UX design of the app
-- [ ] Cover: color palette (`#25D366` WhatsApp green, grays used for text and borders, red for errors), typography (system font stack), layout (centered column, `max-w-xl`, pill-shaped input + button), component inventory (country selector, phone input, CTA button, error message, about blurb, theme toggle), dark mode strategy (Tailwind `dark:` classes, `localStorage` persistence, `prefers-color-scheme` fallback)
-- [ ] Include a **Design decisions** section explaining the key choices and their rationale (e.g. no external fonts, WhatsApp brand color, pill shape)
-- [ ] Include a **Future considerations** section as a placeholder for evolving the design
-- [ ] Update `AGENTS.md` to reference `docs/DESIGN.md`: AI agents working on UI tasks must read it before making visual changes, and must update it when introducing new components or changing existing ones
+- [x] Create `docs/DESIGN.md` documenting the current visual and UX design of the app
+- [x] Cover: color palette (`#25D366` WhatsApp green, grays used for text and borders, red for errors), typography (system font stack), layout (centered column, `max-w-xl`, pill-shaped input + button), component inventory (country selector, phone input, CTA button, error message, about blurb, theme toggle), dark mode strategy (Tailwind `dark:` classes, `localStorage` persistence, `prefers-color-scheme` fallback)
+- [x] Include a **Design decisions** section explaining the key choices and their rationale (e.g. no external fonts, WhatsApp brand color, pill shape)
+- [x] Include a **Future considerations** section as a placeholder for evolving the design
+- [x] Update `AGENTS.md` to reference `docs/DESIGN.md`: AI agents working on UI tasks must read it before making visual changes, and must update it when introducing new components or changing existing ones
 
 **Notes:**
 - The document is descriptive (current state), not prescriptive — it captures what exists, not what should exist
@@ -244,15 +244,15 @@ Feature: UI localization
 
 ---
 
-### T-31 · SVG favicons with light/dark mode support
+### ~~T-31 · SVG favicons with light/dark mode support~~
 
-- [ ] Create two SVG favicons: one for light mode, one for dark mode — both AI-generated and consistent with the design documented in `docs/DESIGN.md` (T-30 must land first)
-- [ ] Light mode favicon: white or light background with the WhatsApp green (`#25D366`) `zap` motif
-- [ ] Dark mode favicon: dark background (`#111827` or similar) with the same green motif so it remains visible against browser chrome in dark mode
-- [ ] Dynamically switch the active favicon based on the current theme (match the theme toggle state stored in `localStorage`, same logic used by the dark mode toggle)
-- [ ] Also respond to `prefers-color-scheme` changes at runtime so the favicon updates without a page reload when the OS theme changes
-- [ ] Place SVG files in `app/static/` and reference them from `<head>` via `<link rel="icon">` tags
-- [ ] No raster fallbacks required — SVG is sufficient for all target browsers
+- [x] Create two SVG favicons: one for light mode, one for dark mode — both AI-generated and consistent with the design documented in `docs/DESIGN.md` (T-30 must land first)
+- [x] Light mode favicon: white or light background with the WhatsApp green (`#25D366`) `zap` motif
+- [x] Dark mode favicon: dark background (`#111827` or similar) with the same green motif so it remains visible against browser chrome in dark mode
+- [x] Dynamically switch the active favicon based on the current theme (match the theme toggle state stored in `localStorage`, same logic used by the dark mode toggle)
+- [x] Also respond to `prefers-color-scheme` changes at runtime so the favicon updates without a page reload when the OS theme changes
+- [x] Place SVG files in `app/static/` and reference them from `<head>` via `<link rel="icon">` tags
+- [x] No raster fallbacks required — SVG is sufficient for all target browsers
 
 **BDD scenarios:**
 
@@ -484,26 +484,17 @@ Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
 
 ---
 
-### T-32 · Authenticate auto-implement workflow as `raschmitt` and sign commits
+### ~~T-32 · Authenticate auto-implement workflow as `raschmitt` and sign commits~~
 
 Follow-up improvement to T-22. The auto-implement workflow currently runs as `github-actions[bot]`, which means:
 - OpenCode free tier won't comment on its own PRs (only on PRs opened by the paid user)
 - Commits appear as "Unverified" on GitHub
 
-- [ ] Create a GitHub Personal Access Token (classic, scopes: `repo`, `workflow`) for the `raschmitt` account and store it as `GH_PAT` in repository secrets
-- [ ] Create a GPG key, add the public half to the GitHub account (Settings → SSH and GPG keys), and store the private key as `GPG_PRIVATE_KEY` in repository secrets
-- [ ] In `.github/workflows/auto-implement.yml`, replace `GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` with `GH_TOKEN: ${{ secrets.GH_PAT }}`
-- [ ] Add a step before OpenCode runs that imports the GPG key and configures git identity + commit signing:
-  ```yaml
-  - name: Configure git identity and signing
-    run: |
-      echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-      git config user.name "raschmitt"
-      git config user.email "<raschmitt's GitHub email>"
-      git config user.signingkey "$(gpg --list-secret-keys --keyid-format=long | awk '/^sec/ {print $2}' | cut -d'/' -f2)"
-      git config commit.gpgsign true
-  ```
-- [ ] Verify: PRs opened by the workflow are authored by `raschmitt`, commits carry the **Verified** badge, and the `GH_PAT` has the `workflow` scope so `.github/workflows/` changes can be pushed without error
+- [x] Create a GitHub Personal Access Token (classic, scopes: `repo`, `workflow`) for the `raschmitt` account and store it as `GH_PAT` in repository secrets
+- [x] Create a GPG key, add the public half to the GitHub account (Settings → SSH and GPG keys), and store the private key as `GPG_PRIVATE_KEY` in repository secrets
+- [x] In `.github/workflows/auto-implement.yml`, replace `GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` with `GH_TOKEN: ${{ secrets.GH_PAT }}`
+- [x] Add a step before OpenCode runs that imports the GPG key and configures git identity + commit signing:
+- [x] Verify: PRs opened by the workflow are authored by `raschmitt`, commits carry the **Verified** badge, and the `GH_PAT` has the `workflow` scope so `.github/workflows/` changes can be pushed without error
 
 **Notes:**
 - The `workflow` scope on the PAT is required to push workflow file changes (the default `GITHUB_TOKEN` does not support this), which also unblocks tasks like T-26, T-27, T-28
@@ -521,6 +512,21 @@ Add a `workflow_dispatch` input to the auto-implement workflow so the user can p
 - [ ] Pass the input as a `TASK_ID` environment variable to the OpenCode step
 - [ ] Update the OpenCode prompt: if `TASK_ID` is set and non-empty, skip `find-next-task` and use the ID directly; otherwise fall through to existing auto-detect logic
 - [ ] Verify: manual dispatch with a task ID implements that task directly; empty ID or scheduled runs keep the current behaviour
+
+---
+
+### T-34 · Move DESIGN.md to root and apply Google Labs format
+
+- [ ] Restructure `docs/DESIGN.md` to follow the [Google Labs `design.md` spec](https://github.com/google-labs-code/design.md): add YAML front matter with design tokens (colors, typography, spacing, rounded) and reorder sections per the spec's canonical order
+- [ ] Move `docs/DESIGN.md` to repo root (`DESIGN.md`)
+- [ ] Update `AGENTS.md` reference from `docs/DESIGN.md` to `DESIGN.md`
+- [ ] Validate with `npx @google/design.md lint DESIGN.md`
+- [ ] Add `.github/workflows/design-lint.yml` that runs `npx @google/design.md lint DESIGN.md` on pushes/PRs that modify `DESIGN.md`
+
+**Notes:**
+- The YAML front matter tokens must reflect the current design system documented in the existing file
+- Markdown body must preserve the existing content while being restructured into the spec's prescribed sections
+- The lint workflow should use a `paths` filter so it only triggers on `DESIGN.md` changes, following the same pattern as `ci.yml`
 
 ---
 

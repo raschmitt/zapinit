@@ -37,10 +37,14 @@ jobs:
 
       - name: Build static site
         run: |
-          mkdir -p _site/js
+          mkdir -p _site/js _site/static
           cp app/templates/index.html _site/index.html
           cp app/static/js/app.js _site/js/app.js
+          cp app/static/favicon-*.svg _site/static/
+          sed -i "s|/static/{% if theme == 'dark' %}favicon-dark.svg{% else %}favicon-light.svg{% endif %}|/static/favicon-light.svg|" _site/index.html
           sed -i 's|/static/js/app.js|./js/app.js|' _site/index.html
+          sed -i 's|/static/|./static/|g' _site/index.html
+          sed -i 's|/static/|./static/|g' _site/js/app.js
 
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
