@@ -97,6 +97,20 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme(!isDark);
     });
 
+    applyLocale(detectLanguage());
+
+    const langToggle = document.getElementById('lang-toggle');
+    const langText = document.getElementById('lang-text');
+    if (langText) langText.textContent = globalThis.__currentLang.toUpperCase();
+    if (langToggle) {
+        langToggle.addEventListener('click', () => {
+            const next = globalThis.__currentLang === 'pt' ? 'en' : 'pt';
+            localStorage.setItem('lang', next);
+            applyLocale(next);
+            if (langText) langText.textContent = next.toUpperCase();
+        });
+    }
+
     const select = document.getElementById('country');
 
     // Always default to Brazil (BR)
@@ -138,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const raw = phoneInput.value.trim();
 
         if (!raw) {
-            showError('Please enter a phone number');
+            showError(globalThis.__errorEmpty || 'Please enter a phone number');
             return;
         }
 
@@ -147,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parsed = libphonenumber.parsePhoneNumberFromString(normalized, countryCode);
 
         if (!parsed?.isValid()) {
-            showError('Invalid phone number');
+            showError(globalThis.__errorInvalid || 'Invalid phone number');
             return;
         }
 

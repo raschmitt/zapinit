@@ -161,14 +161,14 @@ Feature: WhatsApp redirect
 
 ---
 
-### T-29 · UI localization (PT / EN)
+### ~~T-29 · UI localization (PT / EN)~~
 
-- [ ] Detect browser language via `navigator.language` on page load
-- [ ] If the language starts with `"pt"` (e.g. `pt-BR`, `pt-PT`), apply Portuguese strings; otherwise default to English
-- [ ] No other languages required
-- [ ] Localised strings must cover all user-visible text: button label, input placeholder, both error messages, and the about blurb
-- [ ] Add a `i18n` object in `app.js` keyed by locale (`"pt"` / `"en"`) and apply it via a single `applyLocale(lang)` function so adding new locales later requires only a new key
-- [ ] Expose `applyLocale` on `globalThis` to allow test stubs to call it directly
+- [x] Detect browser language via `navigator.language` on page load
+- [x] If the language starts with `"pt"` (e.g. `pt-BR`, `pt-PT`), apply Portuguese strings; otherwise default to English
+- [x] No other languages required
+- [x] Localised strings must cover all user-visible text: button label, input placeholder, both error messages, and the about blurb
+- [x] Add a `i18n` object in `app.js` keyed by locale (`"pt"` / `"en"`) and apply it via a single `applyLocale(lang)` function so adding new locales later requires only a new key
+- [x] Expose `applyLocale` on `globalThis` to allow test stubs to call it directly
 
 **BDD scenarios:**
 
