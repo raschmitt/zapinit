@@ -57,8 +57,10 @@ def has_open_ai_comments(pr_number: str) -> bool:
 
 def get_thumbsup_reaction_id(pr_number: str) -> str | None:
     result = run_gh(
-        "api", f"repos/{REPO}/issues/{pr_number}/reactions",
-        "--jq", '.[] | select(.content == "+1" and .user.login == "github-actions[bot]") | .id',
+        "api",
+        f"repos/{REPO}/issues/{pr_number}/reactions",
+        "--jq",
+        '.[] | select(.content == "+1" and .user.login == "github-actions[bot]") | .id',
     )
     val = result.stdout.strip()
     return val if val else None
@@ -77,8 +79,10 @@ def main() -> None:
         print("Open AI review comments found")
         if existing_id:
             run_gh(
-                "api", f"repos/{REPO}/issues/{pr_number}/reactions/{existing_id}",
-                "-X", "DELETE",
+                "api",
+                f"repos/{REPO}/issues/{pr_number}/reactions/{existing_id}",
+                "-X",
+                "DELETE",
             )
             print("Removed 👍 reaction")
         else:
@@ -89,9 +93,12 @@ def main() -> None:
             print("👍 already present, skipping")
         else:
             run_gh(
-                "api", f"repos/{REPO}/issues/{pr_number}/reactions",
-                "-X", "POST",
-                "--input", "-",
+                "api",
+                f"repos/{REPO}/issues/{pr_number}/reactions",
+                "-X",
+                "POST",
+                "--input",
+                "-",
                 stdin=json.dumps({"content": "+1"}),
             )
             print("Added 👍 reaction")
