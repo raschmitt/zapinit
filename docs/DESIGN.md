@@ -93,6 +93,9 @@ No external fonts are loaded. The system font stack ensures fast rendering and a
 | Theme toggle | `<button>` | `theme-toggle` | Fixed `top-4 right-4`; sun/moon SVG icons; toggles `dark` class on `<html>` |
 | Buy Me a Coffee | `<a>` | `bmc-link` | Icon link fixed `bottom-4 right-4`; opens `buymeacoffee.com/raschmitt` |
 | GitHub link | `<a>` | `github-link` | Icon link next to BMC; opens repo URL |
+| Favicon (light) | `<link rel="icon">` | `favicon` | SVG favicon for light mode; served by default |
+| Favicon (dark) | `<link rel="icon">` | `favicon` | SVG favicon for dark mode; switched via `updateFavicon()` on theme toggle, OS `prefers-color-scheme` change, and inline IIFE on initial load |
+| `updateFavicon()` | JS function | — | Exposed on `window` for testability; switches `favicon.href` between light/dark variants |
 
 ---
 
@@ -132,7 +135,6 @@ The system preference is the default, but the explicit toggle and localStorage o
 
 ## Future Considerations
 
-- **SVG favicons:** Light and dark variants switched dynamically based on the active theme (see T-31)
 - **UI localization:** Portuguese and English string tables switchable via `navigator.language` (see T-29)
 - **Saved history:** Recent numbers stored in `localStorage` with a quick-select UI
 - **PWA:** Manifest + service worker for an installable, offline-capable app
