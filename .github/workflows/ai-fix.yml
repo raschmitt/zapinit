@@ -32,7 +32,11 @@ jobs:
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
           opencode run -m opencode/big-pickle --dangerously-skip-permissions \
-            "You are an AI agent processing unresolved review threads on \
+            "CRITICAL RULE: Never submit a new PR review. Never post a new \
+             issue comment. Only reply to or resolve EXISTING review threads. \
+             Any new review or comment will trigger this workflow again.
+
+             You are an AI agent processing unresolved review threads on \
              PR #${{ github.event.pull_request.number }} of raschmitt/zapinit.
 
              1. Fetch the diff:
@@ -47,20 +51,30 @@ jobs:
                         comments(first: 2) { nodes { body path line } totalCount }
               } } } } }'
 
-             3. For each thread that is unresolved and has no replies
-                (totalCount == 1): decide if it is a valid issue or not.
-                - Valid: fix the code, commit it (include \\\"Co-authored-by: claude <claude@anthropic.com>\\\"),
-                  then resolve the thread with:
-                  gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: \\\"<ID>\\\" }) { thread { isResolved } } }'
-                - Invalid: reply explaining why it is not applicable, using:
-                  gh api graphql -f query='mutation { addPullRequestReviewThreadReply(input: { pullRequestReviewThreadId: \\\"<ID>\\\", body: \\\"<reply>\\\" }) { comment { id } } }'
+             3. Find the iteration counter in PR comments:
+                gh api repos/raschmitt/zapinit/issues/${{ github.event.pull_request.number }}/comments --jq '.'
+                Look for a comment with \"<!-- ai-fix -->\". Extract the iteration
+                number. If >= 5, stop and do nothing. If not found, this is
+                iteration 1.
 
-             4. After processing all threads, push any commits:
+             4. For each thread where unresolved AND totalCount == 1:
+                - Valid issue: fix the code, then resolve the thread with:
+                  gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: \"<ID>\" }) { thread { isResolved } } }'
+                - Invalid: reply (do NOT resolve) with:
+                  gh api graphql -f query='mutation { addPullRequestReviewThreadReply(input: { pullRequestReviewThreadId: \"<ID>\", body: \"<reply>\" }) { comment { id } } }'
+
+             5. If no code was changed, stop here. Do NOT push.
+
+             6. If code was changed:
+                git add -A
+                git commit -m \"fix: apply review fixes\" -m \"Co-authored-by: claude <claude@anthropic.com>\"
                 git push origin HEAD:refs/heads/${{ github.event.pull_request.head.ref }}
 
-             5. Check if a PR comment contains the text \"<!-- ai-fix -->\".
-                If the iteration count in that comment is 5 or more, stop.
-                Otherwise, post or update it with the new iteration number.
+             7. Update the iteration counter:
+                - Find the existing \"<!-- ai-fix -->\" comment by ID
+                - PATCH it with the new iteration number via:
+                  gh api repos/raschmitt/zapinit/issues/comments/<ID> -X PATCH -f body=\"<!-- ai-fix --> iteration=N\"
+                - If no existing comment, POST one:
+                  gh api repos/raschmitt/zapinit/issues/${{ github.event.pull_request.number }}/comments -X POST -f body=\"<!-- ai-fix --> iteration=1\"
 
-             Do NOT modify workflow files (.github/workflows/*) or scripts
-             in .agents/skills/ai-review/scripts/."
+             NEVER post new issue comments. NEVER submit a new PR review."
