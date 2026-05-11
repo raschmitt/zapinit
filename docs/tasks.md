@@ -155,9 +155,9 @@ Feature: WhatsApp redirect
 
 ### T-25 · Buy Me a Coffee integration
 
-- [ ] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
-- [ ] Add the same sponsor link to the README under a dedicated `## Support` section
-- [ ] Button should be visually consistent with the page style and work in both light and dark mode
+- [-] Add a Buy Me a Coffee (or Buy Me a Beer) button on the website
+- [-] Add the same sponsor link to the README under a dedicated `## Support` section
+- [-] Button should be visually consistent with the page style and work in both light and dark mode
 
 ---
 
@@ -429,17 +429,21 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-26 · AI code review on every PR push
+### ~~T-26 · AI code review on every PR push~~
 
-- [ ] Add `.github/workflows/ai-review.yml` that triggers on every `push` event to an open PR (`pull_request` → `synchronize` + `opened`)
-- [ ] Use OpenAI Codex free tier via the `openai/codex` CLI to review the diff introduced by the push
-- [ ] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
-- [ ] Add `OPENAI_API_KEY` to repository secrets
-- [ ] Scope the review to changed files only to stay within free-tier token limits
+- [x] Create `.agents/skills/ai-review/SKILL.md` — skill definition for AI code review using OpenCode CLI
+- [x] Create `.agents/skills/ai-review/scripts/post_review.py` — script to post/update the review comment on the PR
+- [x] Add `.github/workflows/ai-review.yml` that triggers on every PR push (`pull_request` → `synchronize` + `opened`)
+- [x] Use OpenCode CLI with Minimax M2.5 Free model (`opencode/minimax-m2.5-free`) to review the diff introduced by the push
+- [x] Post the review as a PR comment (update existing comment on re-push rather than creating a new one)
+- [x] Scope the review to changed files only (`git diff origin/main...HEAD`) to stay within free-tier token limits
 
 **Notes:**
-- Run Codex with the diff (`git diff origin/main...HEAD`) as input so the review is focused on new changes
-- Use a hidden HTML marker in the comment (e.g. `<!-- ai-review -->`) to identify and update it on subsequent pushes
+- Run `git diff origin/main...HEAD` as input so the review is focused on new changes
+- Use a hidden HTML marker `<!-- ai-review -->` in the comment to identify and update it on subsequent pushes
+- The `post_review.py` script finds existing comments by this marker and updates them in-place
+- No API keys required — the Minimax M2.5 Free model is available through OpenCode Zen free tier
+- The review workflow uses `GITHUB_TOKEN` (auto-generated), no additional secrets needed
 
 ---
 
