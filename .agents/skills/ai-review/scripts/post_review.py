@@ -12,9 +12,10 @@ MARKER = "<!-- ai-review -->"
 REPO = "raschmitt/zapinit"
 
 
-def run_gh(*args: str) -> subprocess.CompletedProcess:
+def run_gh(*args: str, stdin: str | None = None) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["gh", *args],
+        input=stdin,
         capture_output=True,
         text=True,
         check=True,
@@ -36,31 +37,25 @@ def find_existing_comment(pr_number: str) -> dict | None:
 
 
 def post_or_update_comment(pr_number: str, body: str) -> None:
-    payload = {"body": body}
-    payload_file = "/tmp/ai-review-payload.json"
-    with open(payload_file, "w") as f:
-        json.dump(payload, f)
-
+    payload = json.dumps({"body": body})
     existing = find_existing_comment(pr_number)
     if existing:
         comment_id = existing["id"]
         run_gh(
             "api",
             f"repos/{REPO}/issues/comments/{comment_id}",
-            "-X",
-            "PATCH",
-            "--input",
-            payload_file,
+            "-X", "PATCH",
+            "--input", "-",
+            stdin=payload,
         )
         print(f"Updated existing comment (ID: {comment_id})")
     else:
         run_gh(
             "api",
             f"repos/{REPO}/issues/{pr_number}/comments",
-            "-X",
-            "POST",
-            "--input",
-            payload_file,
+            "-X", "POST",
+            "--input", "-",
+            stdin=payload,
         )
         print("Posted new comment")
 
