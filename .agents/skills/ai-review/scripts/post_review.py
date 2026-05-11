@@ -82,16 +82,6 @@ def parse_findings(text: str) -> list[tuple[str, int, str, str, str]]:
     return findings
 
 
-def parse_verdict(text: str) -> str:
-    m = re.search(r'### Overall Assessment\s*\n+(.+)', text)
-    if not m:
-        return "unknown"
-    line = m.group(1).strip().lower()
-    for verdict in ("fail", "needs-work", "pass"):
-        if verdict in line:
-            return verdict
-    return "unknown"
-
 
 def format_comment(severity: str, title: str, description: str) -> str:
     priority, color = SEVERITY_BADGE.get(severity, ("P2", "yellow"))
@@ -198,15 +188,6 @@ def get_unresolved_positions(pr_number: str) -> tuple[set[tuple[str, int]], set[
     return line_positions, file_positions
 
 
-def react_to_pr(pr_number: str, reaction: str) -> None:
-    run_gh(
-        "api", f"repos/{REPO}/issues/{pr_number}/reactions",
-        "-X", "POST",
-        "--input", "-",
-        stdin=json.dumps({"content": reaction}),
-    )
-
-
 def main() -> None:
     pr_number = os.environ.get("PR_NUMBER")
     if not pr_number:
@@ -223,7 +204,6 @@ def main() -> None:
     commit_id = get_head_sha(pr_number)
     diff_lines = get_diff_lines(pr_number)
     findings = parse_findings(review_text)
-    verdict = parse_verdict(review_text)
     unresolved_lines, unresolved_files = get_unresolved_positions(pr_number)
 
     line_comments: list[dict] = []
@@ -251,10 +231,6 @@ def main() -> None:
     for path, body in file_comments:
         post_file_comment(pr_number, path, body, commit_id)
         print(f"Posted file-level comment on {path}")
-
-    if verdict == "pass":
-        react_to_pr(pr_number, "+1")
-        print("Added 👍 to PR (verdict: pass)")
 
     print(f"Done: {len(line_comments)} line comment(s), {len(file_comments)} file comment(s)")
 

@@ -56,6 +56,13 @@ jobs:
             echo "No review file generated — skipping post step"
           fi
 
+      - name: Manage thumbs-up reaction
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: python3 .agents/skills/ai-review/scripts/manage_reactions.py
+
       - name: Remove eyes reaction (review done)
         if: always()
         env:
