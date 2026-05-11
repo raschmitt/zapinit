@@ -27,7 +27,7 @@ Review the PR diff and post a structured review comment.
 3.  Check previous reviews on this PR to avoid repeating the same findings:
 
     ```bash
-    gh api repos/raschmitt/zapinit/issues/$PR_NUMBER/comments --jq ".[] | select(.body | contains(\"<!-- ai-review -->\")) | .body"
+    gh api repos/raschmitt/zapinit/pulls/$PR_NUMBER/reviews --jq ".[] | select(.body | contains(\"<!-- ai-review -->\")) | .body"
     ```
 
     Note what was already flagged in past reviews. When writing the new
@@ -57,7 +57,7 @@ Review the PR diff and post a structured review comment.
     <brief overview of the changes>
 
     ### Issues Found
-    <file:line> - <description> - <severity: high/medium/low>
+    - `path/to/file.py:42` - description of the issue - severity: high
 
     ### Suggestions
     <actionable recommendations>
