@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post or update an inline AI code review on the PR via the Reviews API."""
+"""Post or update an AI code review as an issue comment on the PR."""
 
 import json
 import os
@@ -7,7 +7,6 @@ import subprocess
 import sys
 
 REVIEW_TEXT_FILE = "/tmp/ai-review.md"
-COMMENTS_FILE = "/tmp/ai-review-comments.json"
 MARKER = "<!-- ai-review -->"
 
 REPO = "raschmitt/zapinit"
@@ -22,27 +21,48 @@ def run_gh(*args: str) -> subprocess.CompletedProcess:
     )
 
 
-def dismiss_old_review(pr_number: str) -> None:
+def find_existing_comment(pr_number: str) -> dict | None:
     result = run_gh(
         "api",
-        f"repos/{REPO}/pulls/{pr_number}/reviews",
+        f"repos/{REPO}/issues/{pr_number}/comments",
         "--jq",
         ".",
     )
-    reviews = json.loads(result.stdout) if result.stdout.strip() else []
-    for review in reviews:
-        if MARKER in review.get("body", ""):
-            review_id = review["id"]
-            run_gh(
-                "api",
-                f"repos/{REPO}/pulls/{pr_number}/reviews/{review_id}/dismissals",
-                "-X",
-                "PUT",
-                "-f",
-                "message=Superseded by updated review",
-            )
-            print(f"Dismissed old review (ID: {review_id})")
-            return
+    comments = json.loads(result.stdout) if result.stdout.strip() else []
+    for comment in comments:
+        if MARKER in comment.get("body", ""):
+            return comment
+    return None
+
+
+def post_or_update_comment(pr_number: str, body: str) -> None:
+    payload = {"body": body}
+    payload_file = "/tmp/ai-review-payload.json"
+    with open(payload_file, "w") as f:
+        json.dump(payload, f)
+
+    existing = find_existing_comment(pr_number)
+    if existing:
+        comment_id = existing["id"]
+        run_gh(
+            "api",
+            f"repos/{REPO}/issues/comments/{comment_id}",
+            "-X",
+            "PATCH",
+            "--input",
+            payload_file,
+        )
+        print(f"Updated existing comment (ID: {comment_id})")
+    else:
+        run_gh(
+            "api",
+            f"repos/{REPO}/issues/{pr_number}/comments",
+            "-X",
+            "POST",
+            "--input",
+            payload_file,
+        )
+        print("Posted new comment")
 
 
 def main() -> None:
@@ -54,37 +74,11 @@ def main() -> None:
     if not os.path.exists(REVIEW_TEXT_FILE):
         print(f"Review text not found: {REVIEW_TEXT_FILE}", file=sys.stderr)
         sys.exit(1)
-    if not os.path.exists(COMMENTS_FILE):
-        print(f"Comments file not found: {COMMENTS_FILE}", file=sys.stderr)
-        sys.exit(1)
 
     with open(REVIEW_TEXT_FILE) as f:
         body = f.read()
-    with open(COMMENTS_FILE) as f:
-        comments_data = json.load(f)
 
-    dismiss_old_review(pr_number)
-
-    review_payload = {
-        "body": body,
-        "event": "COMMENT",
-        "comments": comments_data.get("comments", []),
-    }
-
-    payload_file = "/tmp/ai-review-payload.json"
-    with open(payload_file, "w") as f:
-        json.dump(review_payload, f)
-
-    result = run_gh(
-        "api",
-        f"repos/{REPO}/pulls/{pr_number}/reviews",
-        "-X",
-        "POST",
-        "--input",
-        payload_file,
-    )
-    new_review = json.loads(result.stdout)
-    print(f"Posted new review (ID: {new_review['id']})")
+    post_or_update_comment(pr_number, body)
 
 
 if __name__ == "__main__":
