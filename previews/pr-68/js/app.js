@@ -84,9 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const favicon = document.getElementById('favicon');
 
     function updateFavicon(dark) {
-        favicon.href = dark ? '/static/favicon-dark.svg' : '/static/favicon-light.svg';
+        if (favicon) {
+            favicon.href = dark ? '/static/favicon-dark.svg' : '/static/favicon-light.svg';
+        }
     }
-    globalThis.updateFavicon = updateFavicon;
+    window.updateFavicon = updateFavicon;
 
     function applyTheme(dark) {
         document.documentElement.classList.toggle('dark', dark);
@@ -96,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const stored = localStorage.getItem('theme');
-    const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(stored === 'dark' || (!stored && prefersDark));
+    const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    applyTheme(stored === 'dark' || (!stored && colorScheme.matches));
 
     themeToggle.addEventListener('click', () => {
         const isDark = document.documentElement.classList.contains('dark');
@@ -105,10 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme(!isDark);
     });
 
-    globalThis.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) {
-            applyTheme(e.matches);
-        }
+    colorScheme.addEventListener('change', (e) => {
+        applyTheme(e.matches);
     });
 
     const select = document.getElementById('country');
