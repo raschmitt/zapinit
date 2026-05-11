@@ -4,27 +4,6 @@ Guidelines for AI agents working in this repository. Read this before making any
 
 ---
 
-## GitHub Account
-
-Always use the **`raschmitt`** account for every interaction with GitHub and the `gh` CLI.
-
-This repo uses a multi-account SSH setup. The correct remote host alias is `github-raschmitt`, not `github.com`.
-
-```bash
-# Verify the active account before any gh command
-gh auth status
-
-# Correct remote URL format for this repo
-git remote set-url origin git@github-raschmitt:raschmitt/zapinit.git
-
-# If you need to switch active account
-gh auth switch --user raschmitt
-```
-
-Never push or open PRs from the `raschmitt` account.
-
----
-
 ## Branch Rules
 
 **No direct pushes to `main`.** Every change — including docs, config, and fixes — goes through a pull request.
@@ -134,6 +113,35 @@ Additional rules:
 - All CI checks must pass before merging
 - Never force-push to a PR branch after review has started
 
+**Resolving review comments:** After addressing a review comment, resolve its thread via the GraphQL API:
+
+```bash
+# 1. Find the thread node ID
+gh api graphql -f query='
+{
+  repository(owner: "raschmitt", name: "zapinit") {
+    pullRequest(number: <PR>) {
+      reviewThreads(first: 100) {
+        nodes {
+          id
+          comments(first: 1) { nodes { databaseId } }
+        }
+      }
+    }
+  }
+}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.comments.nodes[0].databaseId == <COMMENT_ID>) | .id'
+
+# 2. Resolve the thread
+gh api graphql -f query='
+mutation {
+  resolveReviewThread(input: { threadId: "<THREAD_NODE_ID>" }) {
+    thread { isResolved }
+  }
+}'
+```
+
+The REST API does not support resolving threads — GraphQL is required.
+
 ---
 
 ## Testing Requirements
@@ -144,6 +152,7 @@ Additional rules:
 - Every new helper function must have at least one unit test
 - Every new route must have at least one integration test using `TestClient`
 - Check `docs/tasks.md` — BDD scenarios are already written for each task; implement them, don't skip them
+- Every bug fix must include at least one new test that reproduces the fixed scenario and would have failed before the fix
 
 Run the full suite before opening a PR:
 
@@ -160,6 +169,8 @@ ruff format --check .
 
 Both must pass with zero errors.
 
+**Lint must be applied locally before every commit.** Run `ruff check . --fix && ruff format .` to auto-fix violations, then re-run the check commands above to confirm zero errors remain.
+
 ---
 
 ## Task Tracking
@@ -168,6 +179,7 @@ Both must pass with zero errors.
 
 - Before starting work, find the relevant task and mark it `[-]` (in progress)
 - When the PR is merged, mark it `[x]` (done) in a follow-up commit to `main` via PR, or include it in the same PR
+- When all subtasks under a task heading are marked `[x]`, strike through the task title using `~~Title~~`
 - Do not invent scope beyond what the task describes — if the task is small, the PR should be small
 
 ---
@@ -196,6 +208,13 @@ Before referencing a function, class, or file path, confirm it exists. Grep or r
 
 ### One thing at a time
 Complete one task fully (code + tests + passing CI) before moving to the next. Do not leave half-done changes in a branch.
+
+### Check before re-implementing
+Before implementing a task, check if the expected outputs already exist on `main` — review the expected files for each subtask (features, step defs, helpers, config changes). If all subtasks are already implemented on `main`, do NOT re-implement. Instead:
+- Mark every subtask as `[x]`
+- Strike through the task heading (`~~T-XX · Title~~`)
+- Commit this change
+- Open a PR with title `chore: mark T-XX as done, already implemented`
 
 ### Explain before acting on irreversible changes
 For destructive or hard-to-reverse operations (dropping files, force operations, schema changes), state what you are about to do and why before executing.

@@ -77,8 +77,28 @@ const COUNTRIES = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+
+    function applyTheme(dark) {
+        document.documentElement.classList.toggle('dark', dark);
+        sunIcon.classList.toggle('hidden', !dark);
+        moonIcon.classList.toggle('hidden', dark);
+    }
+
+    const stored = localStorage.getItem('theme');
+    const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(stored === 'dark' || (!stored && prefersDark));
+
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        applyTheme(!isDark);
+    });
+
     const select = document.getElementById('country');
-    
+
     // Always default to Brazil (BR)
     const defaultCountry = 'BR';
 
@@ -97,5 +117,46 @@ document.addEventListener('DOMContentLoaded', () => {
         opt.title = c.name;
         if (c.code === defaultCountry) opt.selected = true;
         select.appendChild(opt);
+    });
+
+    const phoneInput = document.getElementById('phone');
+    const openWaBtn = document.getElementById('open-wa');
+    const errorMsg = document.getElementById('error-msg');
+
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove('hidden');
+    }
+
+    function clearError() {
+        errorMsg.textContent = '';
+        errorMsg.classList.add('hidden');
+    }
+
+    function openWhatsApp() {
+        clearError();
+        const raw = phoneInput.value.trim();
+
+        if (!raw) {
+            showError('Please enter a phone number');
+            return;
+        }
+
+        const countryCode = select.options[select.selectedIndex].dataset.code;
+        const normalized = raw.startsWith('00') ? '+' + raw.slice(2) : raw;
+        const parsed = libphonenumber.parsePhoneNumberFromString(normalized, countryCode);
+
+        if (!parsed?.isValid()) {
+            showError('Invalid phone number');
+            return;
+        }
+
+        globalThis.open(`https://wa.me/${parsed.number.slice(1)}`, '_blank', 'noopener,noreferrer');
+    }
+
+    openWaBtn.addEventListener('click', openWhatsApp);
+
+    phoneInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') openWhatsApp();
     });
 });
