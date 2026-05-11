@@ -24,10 +24,10 @@ Review the PR diff and post a structured review comment.
     - `docs/architecture.md` — check architectural decisions and tech stack
     - `docs/DESIGN.md` — if it exists, check visual and UX design conventions
 
-3.  Check previous reviews on this PR to avoid repeating the same findings:
+3.  Check previous inline review comments on this PR to avoid repeating the same findings:
 
     ```bash
-    gh api repos/raschmitt/zapinit/pulls/$PR_NUMBER/reviews --jq ".[] | select(.body | contains(\"<!-- ai-review -->\")) | .body"
+    gh api repos/raschmitt/zapinit/pulls/$PR_NUMBER/comments --jq "[.[] | select(.body | contains(\"<!-- ai-review -->\")) | .body]"
     ```
 
     Note what was already flagged in past reviews. When writing the new
@@ -57,7 +57,7 @@ Review the PR diff and post a structured review comment.
     <brief overview of the changes>
 
     ### Issues Found
-    - `path/to/file.py:42` - description of the issue - severity: high
+    - `path/to/file.py:42` - severity: high - Short title of issue: Full description of the problem.
 
     ### Suggestions
     <actionable recommendations>
