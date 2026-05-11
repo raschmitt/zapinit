@@ -103,12 +103,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     themeToggle.addEventListener('click', () => {
         const isDark = document.documentElement.classList.contains('dark');
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        const newTheme = isDark ? 'light' : 'dark';
+        localStorage.setItem('theme', newTheme);
+        document.cookie = `theme=${newTheme};path=/;max-age=31536000`;
         applyTheme(!isDark);
     });
 
     colorScheme.addEventListener('change', (e) => {
-        applyTheme(e.matches);
+        if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches);
+        }
     });
 
     const select = document.getElementById('country');

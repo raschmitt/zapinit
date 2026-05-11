@@ -8,12 +8,14 @@ scenarios("../features/favicon.feature")
 
 @given('the theme is set to "light"', target_fixture="response")
 def light_theme(client: TestClient):
-    return client.get("/", params={"theme": "light"})
+    client.cookies.set("theme", "light", path="/")
+    return client.get("/")
 
 
 @given('the theme is set to "dark"', target_fixture="response")
 def dark_theme(client: TestClient):
-    return client.get("/", params={"theme": "dark"})
+    client.cookies.set("theme", "dark", path="/")
+    return client.get("/")
 
 
 @when("the page loads")
@@ -43,6 +45,7 @@ def check_dark_favicon(response):
 @then("the favicon href updates to the dark-mode SVG without a page reload")
 def check_favicon_update():
     app_js = Path("app/static/js/app.js").read_text()
-    assert "updateFavicon" in app_js
-    assert "favicon-dark.svg" in app_js
-    assert "favicon-light.svg" in app_js
+    assert "window.updateFavicon = updateFavicon" in app_js
+    assert "colorScheme.addEventListener('change'" in app_js
+    assert "/static/favicon-dark.svg" in app_js
+    assert "/static/favicon-light.svg" in app_js

@@ -9,7 +9,15 @@
     <script>tailwind.config = { darkMode: 'class' }</script>
     <script>
         (function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlTheme = urlParams.get('theme');
+            if (urlTheme === 'dark' || urlTheme === 'light') {
+                localStorage.setItem('theme', urlTheme);
+            }
             const stored = localStorage.getItem('theme');
+            if (stored === 'dark' || stored === 'light') {
+                document.cookie = `theme=${stored};path=/;max-age=31536000`;
+            }
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             if (stored === 'dark' || (!stored && prefersDark)) {
                 document.documentElement.classList.add('dark');
