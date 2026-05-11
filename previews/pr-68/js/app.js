@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             favicon.href = dark ? './static/favicon-dark.svg' : './static/favicon-light.svg';
         }
     }
-    window.updateFavicon = updateFavicon;
+    globalThis.updateFavicon = updateFavicon;
 
     function applyTheme(dark) {
         document.documentElement.classList.toggle('dark', dark);
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const stored = localStorage.getItem('theme');
-    const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const colorScheme = globalThis.matchMedia('(prefers-color-scheme: dark)');
     applyTheme(stored === 'dark' || (!stored && colorScheme.matches));
 
     themeToggle.addEventListener('click', () => {
