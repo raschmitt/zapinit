@@ -4,27 +4,6 @@ Guidelines for AI agents working in this repository. Read this before making any
 
 ---
 
-## GitHub Account
-
-Always use the **`raschmitt`** account for every interaction with GitHub and the `gh` CLI.
-
-This repo uses a multi-account SSH setup. The correct remote host alias is `github-raschmitt`, not `github.com`.
-
-```bash
-# Verify the active account before any gh command
-gh auth status
-
-# Correct remote URL format for this repo
-git remote set-url origin git@github-raschmitt:raschmitt/zapinit.git
-
-# If you need to switch active account
-gh auth switch --user raschmitt
-```
-
-Never push or open PRs from the `raschmitt` account.
-
----
-
 ## Branch Rules
 
 **No direct pushes to `main`.** Every change — including docs, config, and fixes — goes through a pull request.
@@ -229,6 +208,13 @@ Before referencing a function, class, or file path, confirm it exists. Grep or r
 
 ### One thing at a time
 Complete one task fully (code + tests + passing CI) before moving to the next. Do not leave half-done changes in a branch.
+
+### Check before re-implementing
+Before implementing a task, check if the expected outputs already exist on `main` — review the expected files for each subtask (features, step defs, helpers, config changes). If all subtasks are already implemented on `main`, do NOT re-implement. Instead:
+- Mark every subtask as `[x]`
+- Strike through the task heading (`~~T-XX · Title~~`)
+- Commit this change
+- Open a PR with title `chore: mark T-XX as done, already implemented`
 
 ### Explain before acting on irreversible changes
 For destructive or hard-to-reverse operations (dropping files, force operations, schema changes), state what you are about to do and why before executing.
