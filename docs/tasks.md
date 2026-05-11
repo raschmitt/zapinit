@@ -229,13 +229,13 @@ Feature: UI localization
 
 ---
 
-### T-30 · DESIGN.md — living design document
+### ~~T-30 · DESIGN.md — living design document~~
 
-- [ ] Create `docs/DESIGN.md` documenting the current visual and UX design of the app
-- [ ] Cover: color palette (`#25D366` WhatsApp green, grays used for text and borders, red for errors), typography (system font stack), layout (centered column, `max-w-xl`, pill-shaped input + button), component inventory (country selector, phone input, CTA button, error message, about blurb, theme toggle), dark mode strategy (Tailwind `dark:` classes, `localStorage` persistence, `prefers-color-scheme` fallback)
-- [ ] Include a **Design decisions** section explaining the key choices and their rationale (e.g. no external fonts, WhatsApp brand color, pill shape)
-- [ ] Include a **Future considerations** section as a placeholder for evolving the design
-- [ ] Update `AGENTS.md` to reference `docs/DESIGN.md`: AI agents working on UI tasks must read it before making visual changes, and must update it when introducing new components or changing existing ones
+- [x] Create `docs/DESIGN.md` documenting the current visual and UX design of the app
+- [x] Cover: color palette (`#25D366` WhatsApp green, grays used for text and borders, red for errors), typography (system font stack), layout (centered column, `max-w-xl`, pill-shaped input + button), component inventory (country selector, phone input, CTA button, error message, about blurb, theme toggle), dark mode strategy (Tailwind `dark:` classes, `localStorage` persistence, `prefers-color-scheme` fallback)
+- [x] Include a **Design decisions** section explaining the key choices and their rationale (e.g. no external fonts, WhatsApp brand color, pill shape)
+- [x] Include a **Future considerations** section as a placeholder for evolving the design
+- [x] Update `AGENTS.md` to reference `docs/DESIGN.md`: AI agents working on UI tasks must read it before making visual changes, and must update it when introducing new components or changing existing ones
 
 **Notes:**
 - The document is descriptive (current state), not prescriptive — it captures what exists, not what should exist
