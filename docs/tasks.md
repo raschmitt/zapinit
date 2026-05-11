@@ -480,26 +480,17 @@ Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
 
 ---
 
-### T-32 · Authenticate auto-implement workflow as `raschmitt` and sign commits
+### ~~T-32 · Authenticate auto-implement workflow as `raschmitt` and sign commits~~
 
 Follow-up improvement to T-22. The auto-implement workflow currently runs as `github-actions[bot]`, which means:
 - OpenCode free tier won't comment on its own PRs (only on PRs opened by the paid user)
 - Commits appear as "Unverified" on GitHub
 
-- [ ] Create a GitHub Personal Access Token (classic, scopes: `repo`, `workflow`) for the `raschmitt` account and store it as `GH_PAT` in repository secrets
-- [ ] Create a GPG key, add the public half to the GitHub account (Settings → SSH and GPG keys), and store the private key as `GPG_PRIVATE_KEY` in repository secrets
-- [ ] In `.github/workflows/auto-implement.yml`, replace `GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` with `GH_TOKEN: ${{ secrets.GH_PAT }}`
-- [ ] Add a step before OpenCode runs that imports the GPG key and configures git identity + commit signing:
-  ```yaml
-  - name: Configure git identity and signing
-    run: |
-      echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-      git config user.name "raschmitt"
-      git config user.email "<raschmitt's GitHub email>"
-      git config user.signingkey "$(gpg --list-secret-keys --keyid-format=long | awk '/^sec/ {print $2}' | cut -d'/' -f2)"
-      git config commit.gpgsign true
-  ```
-- [ ] Verify: PRs opened by the workflow are authored by `raschmitt`, commits carry the **Verified** badge, and the `GH_PAT` has the `workflow` scope so `.github/workflows/` changes can be pushed without error
+- [x] Create a GitHub Personal Access Token (classic, scopes: `repo`, `workflow`) for the `raschmitt` account and store it as `GH_PAT` in repository secrets
+- [x] Create a GPG key, add the public half to the GitHub account (Settings → SSH and GPG keys), and store the private key as `GPG_PRIVATE_KEY` in repository secrets
+- [x] In `.github/workflows/auto-implement.yml`, replace `GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` with `GH_TOKEN: ${{ secrets.GH_PAT }}`
+- [x] Add a step before OpenCode runs that imports the GPG key and configures git identity + commit signing:
+- [x] Verify: PRs opened by the workflow are authored by `raschmitt`, commits carry the **Verified** badge, and the `GH_PAT` has the `workflow` scope so `.github/workflows/` changes can be pushed without error
 
 **Notes:**
 - The `workflow` scope on the PAT is required to push workflow file changes (the default `GITHUB_TOKEN` does not support this), which also unblocks tasks like T-26, T-27, T-28
