@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
+    inputs:
+      task_id:
+        description: 'Task ID to implement (e.g. T-26). Leave blank for auto-detect.'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -38,12 +43,15 @@ jobs:
       - name: Run agentic task implementation
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
+          TASK_ID: ${{ inputs.task_id || '' }}
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
           opencode run -m opencode/big-pickle --dangerously-skip-permissions \
              "You are an AI agent working on the zapinit project. Follow these steps in order:
 
-             1. Use the find-next-task skill to identify what to work on by reading:
+             1. If the TASK_ID environment variable is set and non-empty, skip
+                find-next-task and use that ID directly. Otherwise, use the
+                task-find-next skill to identify what to work on by reading:
                 @.agents/skills/task-find-next/SKILL.md
 
              2. If no task is available, stop and print 'No available tasks.' Do not proceed.

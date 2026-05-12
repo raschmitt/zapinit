@@ -496,15 +496,15 @@ Follow-up improvement to T-22. The auto-implement workflow currently runs as `gi
 
 ---
 
-### T-33 · Manual task selection via `workflow_dispatch`
+### ~~T-33 · Manual task selection via `workflow_dispatch`~~
 
 
 Add a `workflow_dispatch` input to the auto-implement workflow so the user can pick which task to run when triggering manually, while preserving the existing `find-next-task` auto-detect behaviour on scheduled runs.
 
-- [ ] Add an `inputs.task_id` text field to `workflow_dispatch` in `.github/workflows/auto-implement.yml` — accepts a task ID (e.g. `T-26`) or left blank for auto-detect
-- [ ] Pass the input as a `TASK_ID` environment variable to the OpenCode step
-- [ ] Update the OpenCode prompt: if `TASK_ID` is set and non-empty, skip `find-next-task` and use the ID directly; otherwise fall through to existing auto-detect logic
-- [ ] Verify: manual dispatch with a task ID implements that task directly; empty ID or scheduled runs keep the current behaviour
+- [x] Add an `inputs.task_id` text field to `workflow_dispatch` in `.github/workflows/auto-implement.yml` — accepts a task ID (e.g. `T-26`) or left blank for auto-detect
+- [x] Pass the input as a `TASK_ID` environment variable to the OpenCode step
+- [x] Update the OpenCode prompt: if `TASK_ID` is set and non-empty, skip `find-next-task` and use the ID directly; otherwise fall through to existing auto-detect logic
+- [x] Verify: manual dispatch with a task ID implements that task directly; empty ID or scheduled runs keep the current behaviour
 
 ---
 
