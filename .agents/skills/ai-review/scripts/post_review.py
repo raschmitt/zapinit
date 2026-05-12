@@ -194,7 +194,8 @@ def get_unresolved_positions(pr_number: str) -> tuple[set[tuple[str, int]], set[
         f'{{ repository(owner: "{owner}", name: "{repo_name}") {{'
         f" pullRequest(number: {pr_number}) {{"
         f" reviewThreads(first: 100) {{ nodes {{ isResolved"
-        f" comments(first: 1) {{ nodes {{ body path line }} }} }} }} }} }} }}"
+        f" comments(first: 2) {{ nodes {{ body path line }} totalCount }}"
+        f" }} }} }} }} }}"
     )
     try:
         result = run_gh("api", "graphql", "-f", f"query={query}")
@@ -216,12 +217,14 @@ def get_unresolved_positions(pr_number: str) -> tuple[set[tuple[str, int]], set[
     for thread in threads:
         if thread.get("isResolved"):
             continue
-        nodes = thread.get("comments", {}).get("nodes", [])
+        comments_node = thread.get("comments", {})
+        total_count = comments_node.get("totalCount", 1)
+        if total_count > 1:
+            continue
+        nodes = comments_node.get("nodes", [])
         if not nodes:
             continue
         comment = nodes[0]
-        if MARKER not in comment.get("body", ""):
-            continue
         path = comment.get("path")
         line = comment.get("line")
         if not path:
