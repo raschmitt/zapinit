@@ -1,10 +1,13 @@
 name: AI Fix Loop
+
 on:
   pull_request_review:
     types: [submitted]
+
 permissions:
   contents: write
   pull-requests: write
+
 jobs:
   fix:
     runs-on: ubuntu-latest
@@ -14,11 +17,14 @@ jobs:
           ref: main
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install OpenCode CLI
         run: curl -fsSL https://opencode.ai/install | bash
+
       - name: Configure git identity and signing
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
@@ -26,65 +32,15 @@ jobs:
           git config user.email "rogerio.schmitt@me.com"
           git config user.signingkey "$(gpg --list-secret-keys --keyid-format=long | awk '/^sec/ {print $2}' | cut -d'/' -f2)"
           git config commit.gpgsign true
-      - name: Process review comments
+
+      - name: Run AI fix
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          BRANCH_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
-          IGNORE_PATTERNS=$(grep -v '^\s*#' .ai-fix-ignore | grep -v '^\s*$' | tr '\n' '|' | sed 's/|$//')
           opencode run -m opencode/big-pickle --dangerously-skip-permissions \
-            "CRITICAL RULE: Never submit a new PR review. Never post a new \
-             issue comment. Only reply to or resolve EXISTING review threads. \
-             Any new review or comment will trigger this workflow again.
+            "Fix PR review comments by following the instructions in:
+             @.agents/skills/ai-fix/SKILL.md
 
-             PROTECTED FILES: Never modify any file matching these patterns \
-             (from .ai-fix-ignore): ${IGNORE_PATTERNS}
-             If a review thread points to a protected file, reply explaining \
-             you cannot auto-fix it, but do NOT resolve the thread.
-
-             You are an AI agent processing unresolved review threads on \
-             PR #${PR_NUMBER} of raschmitt/zapinit.
-
-             1. Fetch the diff:
-                git diff origin/main...HEAD
-
-             2. Fetch all unresolved review threads via GraphQL:
-                gh api graphql -f query='
-                  { repository(owner: \"raschmitt\", name: \"zapinit\") {
-                    pullRequest(number: ${PR_NUMBER}) {
-                      reviewThreads(first: 100) { nodes {
-                        id isResolved
-                        comments(first: 2) { nodes { body path line } totalCount }
-              } } } } }'
-
-             3. Find the iteration counter in PR comments:
-                gh api repos/raschmitt/zapinit/issues/${PR_NUMBER}/comments --jq '.'
-                Look for a comment with \"<!-- ai-fix -->\". Extract the iteration
-                number. If >= 5, stop and do nothing. If not found, this is
-                iteration 1.
-
-             4. For each thread where unresolved AND totalCount == 1:
-                - If the file is in PROTECTED FILES: reply explaining it cannot
-                  be auto-fixed (do NOT resolve the thread).
-                - Valid issue in a non-protected file: fix the code, then resolve:
-                  gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: \"<ID>\" }) { thread { isResolved } } }'
-                - Invalid issue: reply (do NOT resolve) with:
-                  gh api graphql -f query='mutation { addPullRequestReviewThreadReply(input: { pullRequestReviewThreadId: \"<ID>\", body: \"<reply>\" }) { comment { id } } }'
-
-             5. If no code was changed, stop here. Do NOT push.
-
-             6. If code was changed:
-                git add -A
-                git commit -m \"fix: apply review fixes\" -m \"Co-authored-by: claude <claude@anthropic.com>\"
-                git push origin HEAD:refs/heads/${BRANCH_REF}
-
-             7. Update the iteration counter:
-                - Find the existing \"<!-- ai-fix -->\" comment by ID
-                - PATCH it with the new iteration number via:
-                  gh api repos/raschmitt/zapinit/issues/comments/<ID> -X PATCH -f body=\"<!-- ai-fix --> iteration=N\"
-                - If no existing comment, POST one:
-                  gh api repos/raschmitt/zapinit/issues/${PR_NUMBER}/comments -X POST -f body=\"<!-- ai-fix --> iteration=1\"
-
-             NEVER post new issue comments. NEVER submit a new PR review."
+             The PR number is in the PR_NUMBER environment variable."
