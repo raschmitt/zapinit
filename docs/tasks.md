@@ -508,13 +508,13 @@ Add a `workflow_dispatch` input to the auto-implement workflow so the user can p
 
 ---
 
-### T-34 · Move DESIGN.md to root and apply Google Labs format
+### ~~T-34 · Move DESIGN.md to root and apply Google Labs format~~
 
-- [ ] Restructure `docs/DESIGN.md` to follow the [Google Labs `design.md` spec](https://github.com/google-labs-code/design.md): add YAML front matter with design tokens (colors, typography, spacing, rounded) and reorder sections per the spec's canonical order
-- [ ] Move `docs/DESIGN.md` to repo root (`DESIGN.md`)
-- [ ] Update `AGENTS.md` reference from `docs/DESIGN.md` to `DESIGN.md`
-- [ ] Validate with `npx @google/design.md lint DESIGN.md`
-- [ ] Add `.github/workflows/design-lint.yml` that runs `npx @google/design.md lint DESIGN.md` on pushes/PRs that modify `DESIGN.md`
+- [x] Restructure `docs/DESIGN.md` to follow the [Google Labs `design.md` spec](https://github.com/google-labs-code/design.md): add YAML front matter with design tokens (colors, typography, spacing, rounded) and reorder sections per the spec's canonical order
+- [x] Move `docs/DESIGN.md` to repo root (`DESIGN.md`)
+- [x] Update `AGENTS.md` reference from `docs/DESIGN.md` to `DESIGN.md`
+- [x] Validate with `npx @google/design.md lint DESIGN.md`
+- [x] Add `.github/workflows/design-lint.yml` that runs `npx @google/design.md lint DESIGN.md` on pushes/PRs that modify `DESIGN.md`
 
 **Notes:**
 - The YAML front matter tokens must reflect the current design system documented in the existing file

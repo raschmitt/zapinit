@@ -1,16 +1,89 @@
+---
+name: zapinit
+colors:
+  whatsapp-green: "#25D366"
+  cta-hover: "#1ebe5d"
+  cta-active: "#18a852"
+  error-red: "#ef4444"
+  error-red-dark: "#f87171"
+  text-primary: "#374151"
+  text-primary-dark: "#d1d5db"
+  text-muted: "#6b7280"
+  text-muted-dark: "#9ca3af"
+  border: "#e5e7eb"
+  border-dark: "#374151"
+  page-bg: "#ffffff"
+  page-bg-dark: "#111827"
+  bmc-hover: "#FFDD00"
+  github-hover-light: "#374151"
+  github-hover-dark: "#e5e7eb"
+typography:
+  logo:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+    fontSize: 48px
+    fontWeight: 300
+  input-text:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+    fontSize: 16px
+  country-selector:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+    fontSize: 14px
+  button-text:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+    fontWeight: 500
+  error-message:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+    fontSize: 14px
+  about-blurb:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+    fontSize: 14px
+rounded:
+  full: 9999px
+spacing:
+  xs: 4px
+  sm: 8px
+  md: 16px
+  lg: 32px
+  xl: 64px
+  section: 32px
+  container-padding: 16px
+components:
+  cta-button:
+    backgroundColor: "{colors.whatsapp-green}"
+    textColor: "#ffffff"
+    rounded: "{rounded.full}"
+    padding: 16px
+  cta-button-hover:
+    backgroundColor: "{colors.cta-hover}"
+  cta-button-active:
+    backgroundColor: "{colors.cta-active}"
+  input-container:
+    backgroundColor: "{colors.page-bg}"
+    borderColor: "{colors.border}"
+    rounded: "{rounded.full}"
+  input-container-dark:
+    backgroundColor: "{colors.page-bg-dark}"
+    borderColor: "{colors.border-dark}"
+    rounded: "{rounded.full}"
+  error-message:
+    textColor: "{colors.error-red}"
+  error-message-dark:
+    textColor: "{colors.error-red-dark}"
+---
+
 # Design
 
 Living document capturing the current visual and UX design of zapinit. This is descriptive, not prescriptive — it reflects what exists, not what should exist.
-
----
 
 ## Overview
 
 zapinit is a single-page web tool that redirects the user to a WhatsApp chat given a phone number. The UI is minimal: a logo, a country selector + phone input, a call-to-action button, and a handful of supporting elements — all within a centered column layout.
 
----
+The design language is utilitarian and uncluttered, prioritizing instant recognition over visual flourish. The WhatsApp brand green anchors the primary action, while system fonts and generous whitespace create a calm, focused tool that gets out of the user's way.
 
-## Color Palette
+## Colors
+
+The palette is built around the WhatsApp brand green for the primary action and a neutral gray scale for text and surfaces. Dark mode shifts the background to a deep gray `#111827` and adjusts foreground tones for contrast.
 
 | Token | Hex | Usage |
 |---|---|---|
@@ -31,9 +104,16 @@ zapinit is a single-page web tool that redirects the user to a WhatsApp chat giv
 | GitHub hover (light) | `#374151` (gray-700) | GitHub icon hover |
 | GitHub hover (dark) | `#e5e7eb` (gray-200) | GitHub icon hover |
 
----
+### Dark Mode
+
+1. **Flash prevention:** An inline `<script>` in `<head>` reads `localStorage.getItem('theme')` first, falls back to `matchMedia('(prefers-color-scheme: dark)')`, and applies the `dark` class immediately — before the body renders.
+2. **Toggle:** A button in the top-right corner switches between `dark` and light by toggling the `dark` class on `<html>`. The moon icon is shown in light mode; the sun icon in dark mode.
+3. **Persistence:** `localStorage.setItem('theme', 'dark'|'light')` is set on every toggle. On next load the stored value takes priority.
+4. **Implementation:** `darkMode: 'class'` in the Tailwind config enables `dark:` variant class toggling. Every color token and surface has a dark-mode counterpart.
 
 ## Typography
+
+No external fonts are loaded. The system font stack ensures fast rendering and a native feel on every platform.
 
 | Property | Value |
 |---|---|
@@ -45,10 +125,6 @@ zapinit is a single-page web tool that redirects the user to a WhatsApp chat giv
 | Button text | `font-medium` |
 | Error message | `text-sm` |
 | About blurb | `text-sm` |
-
-No external fonts are loaded. The system font stack ensures fast rendering and a native feel on every platform.
-
----
 
 ## Layout
 
@@ -78,9 +154,15 @@ No external fonts are loaded. The system font stack ensures fast rendering and a
 - **Spacing:** `gap-8` between vertical sections
 - **Responsive:** the CTA button switches from `w-full` (mobile) to `w-auto` (sm breakpoint via `sm:w-auto`)
 
----
+## Elevation & Depth
 
-## Component Inventory
+zapinit uses a flat design with no shadows or elevation layers. Visual hierarchy is conveyed through color contrast, spacing, and border separation rather than depth cues. The single interactive element (the CTA button) uses background color change on hover and active states for tactile feedback.
+
+## Shapes
+
+All interactive and container elements use a pill shape (`rounded-full`). This includes the input container and the CTA button. The pill shape softens the interface and is consistent with WhatsApp's own UI language (chat bubbles, profile avatars).
+
+## Components
 
 | Component | Element | ID | Behavior |
 |---|---|---|---|
@@ -97,41 +179,45 @@ No external fonts are loaded. The system font stack ensures fast rendering and a
 | Favicon (dark) | `<link rel="icon">` | `favicon` | SVG favicon for dark mode; switched via `updateFavicon()` on theme toggle, OS `prefers-color-scheme` change, and inline IIFE on initial load |
 | `updateFavicon()` | JS function | — | Exposed on `window` for testability; switches `favicon.href` between light/dark variants |
 
----
+## Do's and Don'ts
 
-## Dark Mode Strategy
-
-1. **Flash prevention:** An inline `<script>` in `<head>` reads `localStorage.getItem('theme')` first, falls back to `matchMedia('(prefers-color-scheme: dark)')`, and applies the `dark` class immediately — before the body renders.
-2. **Toggle:** A button in the top-right corner switches between `dark` and light by toggling the `dark` class on `<html>`. The moon icon is shown in light mode; the sun icon in dark mode.
-3. **Persistence:** `localStorage.setItem('theme', 'dark'|'light')` is set on every toggle. On next load the stored value takes priority.
-4. **Tailwind:** `darkMode: 'class'` in the Tailwind config enables `dark:` variant class toggling. Every color token and surface has a dark-mode counterpart.
-
----
+- Do use the WhatsApp green (`#25D366`) only for the primary CTA and the "zap" part of the logo
+- Don't use rounded corners other than `full` (pill shape) on interactive elements
+- Do maintain high contrast for error messages in both light and dark modes
+- Don't add external fonts — always use the system font stack
+- Do keep the layout centered and vertically aligned on all screen sizes
+- Don't clutter the interface with additional navigation or sidebar elements
+- Do respect the user's system color scheme preference as the default theme
 
 ## Design Decisions
 
 ### No external fonts
+
 System font stack loads instantly, matches the OS chrome, and avoids an extra network request. There is no visual benefit to a custom font for a tool this simple.
 
 ### WhatsApp brand green for CTA
+
 Using `#25D366` makes the primary action immediately recognisable to WhatsApp users. The icon inside the button reinforces the destination. Hover and active states darken the green for tactile feedback.
 
 ### Pill shape (`rounded-full`)
+
 The pill shape softens the interface and is consistent with WhatsApp's own UI language (chat bubbles, profile avatars). Both the input container and the CTA button use full border-radius.
 
 ### Client-side redirect only
+
 The wa.me URL is constructed and opened in the browser with no server round-trip. This keeps phone numbers off the wire, avoids server-side logging, and eliminates latency.
 
 ### Centered single-column layout
+
 A single purpose demands a single focal point. The centered column keeps the user's attention on the input and button pair. No sidebar, no navigation, no distractions.
 
 ### Country selector defaults to Brazil
+
 The creator's primary audience is Brazilian. Rather than guess the user's country from the browser locale (which can be wrong), the app always defaults to Brazil (+55). The user can still pick any country from the dropdown.
 
 ### Dark mode with `prefers-color-scheme` + `localStorage`
-The system preference is the default, but the explicit toggle and localStorage override give the user control. The inline script prevents the flash of unstyled light theme on load.
 
----
+The system preference is the default, but the explicit toggle and localStorage override give the user control. The inline script prevents the flash of unstyled light theme on load.
 
 ## Future Considerations
 
