@@ -22,9 +22,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install OpenCode CLI
-        run: curl -fsSL https://opencode.ai/install | bash
-
       - name: Configure git identity and signing
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
@@ -34,13 +31,16 @@ jobs:
           git config commit.gpgsign true
 
       - name: Run AI fix
+        uses: anomalyco/opencode/github@latest
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          export PATH="$HOME/.opencode/bin:$PATH"
-          opencode run -m opencode/big-pickle --dangerously-skip-permissions \
-            "Fix PR review comments by following the instructions in:
-             @.agents/skills/pr-fix/SKILL.md
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: opencode/big-pickle
+          use_github_token: true
+          prompt: |
+            Fix PR review comments by following the instructions in:
+            @.agents/skills/pr-fix/SKILL.md
 
-             The PR number is in the PR_NUMBER environment variable."
+            The PR number is in the PR_NUMBER environment variable.
