@@ -98,7 +98,7 @@ jobs:
 
              6. If code was changed:
                 git add -A
-                git commit -m \"fix: apply review fixes\" -m \"Co-authored-by: opencode-bot <opencode@ai>\"
+                git commit -m \"fix: apply review fixes\" -m \"Co-authored-by: big-pickle <big-pickle@ai>\"
                 git push origin HEAD:refs/heads/${BRANCH_REF}
 
              7. Update the iteration counter:
