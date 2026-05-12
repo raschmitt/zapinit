@@ -47,7 +47,7 @@ jobs:
       - name: Post review
         if: always()
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           if [ -f /tmp/ai-review.md ]; then
