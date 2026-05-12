@@ -1,0 +1,25 @@
+name: Design Lint
+
+on:
+  push:
+    paths:
+      - DESIGN.md
+  pull_request:
+    paths:
+      - DESIGN.md
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate DESIGN.md
+        run: npx @google/design.md lint DESIGN.md
