@@ -1,0 +1,50 @@
+name: PR Rebase
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to rebase onto main
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install OpenCode CLI
+        run: curl -fsSL https://opencode.ai/install | bash
+
+      - name: Configure git identity and signing
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+          git config user.name "raschmitt"
+          git config user.email "rogerio.schmitt@me.com"
+          git config user.signingkey "$(gpg --list-secret-keys --keyid-format=long | awk '/^sec/ {print $2}' | cut -d'/' -f2)"
+          git config commit.gpgsign true
+
+      - name: Run PR rebase
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          export PATH="$HOME/.opencode/bin:$PATH"
+          opencode run -m opencode/big-pickle --dangerously-skip-permissions \
+            "Rebase the PR branch by following the instructions in:
+             @.agents/skills/pr-rebase/SKILL.md
+             The PR number is in the PR_NUMBER environment variable."
