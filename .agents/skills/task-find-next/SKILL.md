@@ -6,7 +6,7 @@ description: Identifies the next available task in docs/tasks.md. Triggers when 
 Find the next available task in `docs/tasks.md` by running the script below and returning its JSON output.
 
 ```bash
-python3 .agents/skills/find-next-task/scripts/find_next_task.py
+python3 .agents/skills/task-find-next/scripts/find_next_task.py
 ```
 
 ## How availability is determined

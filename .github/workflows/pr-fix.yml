@@ -41,6 +41,6 @@ jobs:
           export PATH="$HOME/.opencode/bin:$PATH"
           opencode run -m opencode/big-pickle --dangerously-skip-permissions \
             "Fix PR review comments by following the instructions in:
-             @.agents/skills/ai-fix/SKILL.md
+             @.agents/skills/pr-fix/SKILL.md
 
              The PR number is in the PR_NUMBER environment variable."

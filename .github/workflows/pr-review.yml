@@ -39,7 +39,7 @@ jobs:
           export PATH="$HOME/.opencode/bin:$PATH"
           opencode run -m opencode/minimax-m2.5-free --dangerously-skip-permissions \
             "Review the PR diff by following the instructions in:
-             @.agents/skills/ai-review/SKILL.md
+             @.agents/skills/pr-review/SKILL.md
 
              The PR number is in the PR_NUMBER environment variable.
              Do NOT modify any files — only review and write /tmp/ai-review.md."
@@ -51,7 +51,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           if [ -f /tmp/ai-review.md ]; then
-            python3 .agents/skills/ai-review/scripts/post_review.py
+            python3 .agents/skills/pr-review/scripts/post_review.py
           else
             echo "No review file generated — skipping post step"
           fi
@@ -61,7 +61,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: python3 .agents/skills/ai-review/scripts/manage_reactions.py
+        run: python3 .agents/skills/pr-review/scripts/manage_reactions.py
 
       - name: Remove eyes reaction (review done)
         if: always()

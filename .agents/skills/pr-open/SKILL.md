@@ -20,7 +20,7 @@ Only commit files that belong to the current task. Do not use `git add .` or `gi
 Once committed, run the diff analyzer to get a structured summary of what changed:
 
 ```bash
-python3 .agents/skills/open-pr/scripts/analyze_diff.py
+python3 .agents/skills/pr-open/scripts/analyze_diff.py
 ```
 
 The output includes `changed_files`, `commit_subjects`, and a `diff_excerpt` (capped at 400 lines). Use these to derive:
@@ -32,7 +32,7 @@ The output includes `changed_files`, `commit_subjects`, and a `diff_excerpt` (ca
 Then open the PR by running:
 
 ```bash
-python3 .agents/skills/open-pr/scripts/open_pr.py <path-to-pr.json>
+python3 .agents/skills/pr-open/scripts/open_pr.py <path-to-pr.json>
 ```
 
 The PR always targets `main` — the script enforces this automatically.
