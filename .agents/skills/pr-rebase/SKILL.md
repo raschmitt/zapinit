@@ -102,7 +102,15 @@ If `git rebase --continue` fails with new conflicts, repeat from step 6b.
 ### 8. Force-push with lease
 
 ```bash
-git push --force-with-lease origin HEAD:refs/heads/"$HEAD_REF"
+if ! git push --force-with-lease origin HEAD:refs/heads/"$HEAD_REF"; then
+  gh api repos/raschmitt/zapinit/issues/$PR_NUMBER/comments \
+    --field body="The automated rebase succeeded, but the force-push failed. This may be due to network issues or permission errors. Please push manually:
+
+\`\`\`
+git push --force-with-lease origin HEAD:refs/heads/$HEAD_REF
+\`\`\`"
+  exit 1
+fi
 ```
 
 ### 9. If rebase still fails after AI resolution attempt
