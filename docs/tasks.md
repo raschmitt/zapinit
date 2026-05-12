@@ -543,6 +543,23 @@ The current T-26 workflow (`ai-review.yml`) has 5 steps (eyes reaction, opencode
 
 ---
 
+### T-36 · PR rebase workflow
+
+Automated workflow that accepts a PR number as input, rebases the branch onto the latest `main`, and resolves any conflicts using an AI agent.
+
+- [ ] Create `.agents/skills/pr-rebase/SKILL.md` — instructions for the agent to fetch the PR branch, rebase onto `main`, resolve conflicts intelligently, and force-push
+- [ ] Create `.github/workflows/pr-rebase.yml` — thin `workflow_dispatch` wrapper accepting a `pr_number` input, calling the `pr-rebase` skill via `opencode/big-pickle`
+- [ ] Skill must: checkout the PR branch, run `git rebase origin/main`, resolve any conflicts by applying the intent of both sides, stage resolved files, continue the rebase, and force-push with lease
+- [ ] If rebase succeeds with no conflicts, skip the AI step and push directly
+- [ ] If rebase fails after the AI attempt, post a comment on the PR explaining what could not be resolved automatically
+
+**Notes:**
+- Follows the skill + thin workflow pattern documented in `docs/architecture.md`
+- Conflict resolution should favour the PR branch intent for feature code and `main` intent for config/workflow files listed in `.agents/skills/pr-fix/assets/ai-fix-ignore`
+- Model: `opencode/big-pickle`
+
+---
+
 ### T-37 · Replace manual OpenCode install with official GitHub Action
 
 Replace the `curl -fsSL https://opencode.ai/install | bash` + `opencode run` pattern in all workflows with the official `opencode-ai/opencode/github@latest` action.
