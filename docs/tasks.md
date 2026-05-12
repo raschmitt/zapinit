@@ -447,7 +447,7 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-27 · AI fix feedback loop
+### ~~T-27 · AI fix feedback loop~~
 
 Closes the feedback loop started by T-22 (auto-implement) and T-26 (AI Code Review).
 
