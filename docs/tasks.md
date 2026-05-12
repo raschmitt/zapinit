@@ -523,15 +523,15 @@ Add a `workflow_dispatch` input to the auto-implement workflow so the user can p
 
 ---
 
-### T-36 · PR rebase workflow
+### ~~T-36 · PR rebase workflow~~
 
 Automated workflow that accepts a PR number as input, rebases the branch onto the latest `main`, and resolves any conflicts using an AI agent.
 
-- [ ] Create `.agents/skills/pr-rebase/SKILL.md` — instructions for the agent to fetch the PR branch, rebase onto `main`, resolve conflicts intelligently, and force-push
-- [ ] Create `.github/workflows/pr-rebase.yml` — thin `workflow_dispatch` wrapper accepting a `pr_number` input, calling the `pr-rebase` skill via `opencode/big-pickle`
-- [ ] Skill must: checkout the PR branch, run `git rebase origin/main`, resolve any conflicts by applying the intent of both sides, stage resolved files, continue the rebase, and force-push with lease
-- [ ] If rebase succeeds with no conflicts, skip the AI step and push directly
-- [ ] If rebase fails after the AI attempt, post a comment on the PR explaining what could not be resolved automatically
+- [x] Create `.agents/skills/pr-rebase/SKILL.md` — instructions for the agent to fetch the PR branch, rebase onto `main`, resolve conflicts intelligently, and force-push
+- [x] Create `.github/workflows/pr-rebase.yml` — thin `workflow_dispatch` wrapper accepting a `pr_number` input, calling the `pr-rebase` skill via `opencode/big-pickle`
+- [x] Skill must: checkout the PR branch, run `git rebase origin/main`, resolve any conflicts by applying the intent of both sides, stage resolved files, continue the rebase, and force-push with lease
+- [x] If rebase succeeds with no conflicts, skip the AI step and push directly
+- [x] If rebase fails after the AI attempt, post a comment on the PR explaining what could not be resolved automatically
 
 **Notes:**
 - Follows the skill + thin workflow pattern documented in `docs/architecture.md`
