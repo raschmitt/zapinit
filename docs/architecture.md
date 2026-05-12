@@ -140,6 +140,52 @@ No mocks for the HTTP layer — FastAPI's `TestClient` runs the actual app in-pr
 
 ---
 
+## AI Workflow Strategy
+
+Automated AI tasks are implemented as **skills** — self-contained instruction sets that can be invoked locally by a developer or triggered automatically by a GitHub Actions workflow. The two entry points must be equivalent: running a skill locally should produce the same result as the workflow run.
+
+### Skill structure
+
+Each skill lives under `.agents/skills/<name>/` and follows the [Codex skills spec](https://developers.openai.com/codex/skills):
+
+```
+.agents/skills/<name>/
+├── SKILL.md          # required — instructions for the AI agent
+├── scripts/          # optional — deterministic helper scripts
+├── references/       # optional — supplementary docs
+└── assets/           # optional — templates and config files
+```
+
+All logic belongs in `SKILL.md`. Scripts are only added when deterministic behavior or external tooling is needed.
+
+### Naming convention
+
+Skills and their corresponding workflows follow a `<context>-<action>` pattern:
+
+| Skill | Workflow | Purpose |
+|---|---|---|
+| `pr-review` | `pr-review.yml` | Review PR diffs and post findings |
+| `pr-fix` | `pr-fix.yml` | Fix unresolved review threads |
+| `pr-open` | _(called from auto-implement)_ | Open a PR after implementation |
+| `task-find-next` | _(called from auto-implement)_ | Select the next task to implement |
+
+### Workflow design rule
+
+Workflows must be **thin wrappers** — no business logic. A workflow's job is to set up the environment and call the skill:
+
+```yaml
+- name: Run skill
+  env:
+    GH_TOKEN: ${{ secrets.GH_PAT }}
+  run: |
+    opencode run -m <model> --dangerously-skip-permissions \
+      "Follow the instructions in: @.agents/skills/<name>/SKILL.md"
+```
+
+Any logic beyond checkout, dependency install, git identity, and the `opencode run` call is a sign the logic belongs in `SKILL.md` instead.
+
+---
+
 ## Future Expansion
 
 The architecture is intentionally minimal so it can grow in any direction:

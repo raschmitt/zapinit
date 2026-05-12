@@ -1,5 +1,5 @@
 ---
-name: ai-fix
+name: pr-fix
 description: Processes unresolved PR review threads — fixes valid issues and replies to invalid ones. Triggers when asked to fix review comments or address PR feedback. Can be run locally or called by the AI Fix Loop workflow.
 ---
 
@@ -14,10 +14,10 @@ Process all unresolved review threads on the current PR and either fix the code 
 
 ### 1. Load protected files
 
-Read `.agents/skills/ai-fix/assets/ai-fix-ignore` and collect all glob patterns. Files matching any pattern must never be modified.
+Read `.agents/skills/pr-fix/assets/ai-fix-ignore` and collect all glob patterns. Files matching any pattern must never be modified.
 
 ```bash
-cat .agents/skills/ai-fix/assets/ai-fix-ignore
+cat .agents/skills/pr-fix/assets/ai-fix-ignore
 ```
 
 ### 2. Fetch the diff
@@ -53,7 +53,7 @@ Only process threads where `isResolved: false` AND `totalCount == 1` (no replies
 
 ### 4. For each unresolved thread
 
-**If the thread's `path` matches a pattern in `.agents/skills/ai-fix/assets/ai-fix-ignore`:**
+**If the thread's `path` matches a pattern in `.agents/skills/pr-fix/assets/ai-fix-ignore`:**
 
 Reply explaining the file is protected from automated fixes and must be addressed manually. Do NOT resolve the thread.
 
@@ -113,5 +113,5 @@ gh api repos/raschmitt/zapinit/pulls/$PR_NUMBER --jq '.head.ref'
 
 - **Never submit a new PR review.** Only reply to or resolve existing threads.
 - **Never post new issue comments.**
-- **Never modify files matching patterns in `.agents/skills/ai-fix/assets/ai-fix-ignore`** — reply to those threads instead.
+- **Never modify files matching patterns in `.agents/skills/pr-fix/assets/ai-fix-ignore`** — reply to those threads instead.
 - Replies to invalid or protected threads do NOT count as code changes — do not push for those alone.
