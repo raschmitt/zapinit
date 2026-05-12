@@ -20,22 +20,14 @@ Read `.agents/skills/ai-fix/assets/ai-fix-ignore` and collect all glob patterns.
 cat .agents/skills/ai-fix/assets/ai-fix-ignore
 ```
 
-### 2. Check iteration limit
-
-```bash
-gh api repos/raschmitt/zapinit/issues/$PR_NUMBER/comments --jq '.'
-```
-
-Look for a comment containing `<!-- ai-fix -->`. Extract the iteration number from it (e.g. `iteration=3`). If the number is **≥ 5**, stop immediately — do nothing further. If no such comment exists, this is iteration 1.
-
-### 3. Fetch the diff
+### 2. Fetch the diff
 
 ```bash
 git fetch origin main
 git diff origin/main...HEAD
 ```
 
-### 4. Fetch unresolved review threads
+### 3. Fetch unresolved review threads
 
 ```bash
 gh api graphql -f query='
@@ -59,9 +51,9 @@ gh api graphql -f query='
 
 Only process threads where `isResolved: false` AND `totalCount == 1` (no replies yet — already-replied threads are skipped to avoid loops).
 
-### 5. For each unresolved thread
+### 4. For each unresolved thread
 
-**If the thread's `path` matches a pattern in `.ai-fix-ignore`:**
+**If the thread's `path` matches a pattern in `.agents/skills/ai-fix/assets/ai-fix-ignore`:**
 
 Reply explaining the file is protected from automated fixes and must be addressed manually. Do NOT resolve the thread.
 
@@ -99,7 +91,7 @@ gh api graphql -f query='mutation {
 }'
 ```
 
-### 6. Commit and push (only if code changed)
+### 5. Commit and push (only if code changed)
 
 If no files were changed, stop here. Do NOT push.
 
@@ -117,27 +109,9 @@ The PR head ref can be retrieved with:
 gh api repos/raschmitt/zapinit/pulls/$PR_NUMBER --jq '.head.ref'
 ```
 
-### 7. Update the iteration counter
-
-Find the existing `<!-- ai-fix -->` comment and PATCH it; if none exists, POST a new one.
-
-```bash
-# Find existing comment ID
-COMMENT_ID=$(gh api repos/raschmitt/zapinit/issues/$PR_NUMBER/comments \
-  --jq '.[] | select(.body | contains("<!-- ai-fix -->")) | .id')
-
-# PATCH if found
-gh api repos/raschmitt/zapinit/issues/comments/$COMMENT_ID \
-  -X PATCH -f body="<!-- ai-fix --> iteration=N"
-
-# POST if not found
-gh api repos/raschmitt/zapinit/issues/$PR_NUMBER/comments \
-  -X POST -f body="<!-- ai-fix --> iteration=1"
-```
-
 ## Rules
 
 - **Never submit a new PR review.** Only reply to or resolve existing threads.
-- **Never post new issue comments** other than the `<!-- ai-fix -->` iteration counter.
-- **Never modify files matching patterns in `.ai-fix-ignore`** — reply to those threads instead.
+- **Never post new issue comments.**
+- **Never modify files matching patterns in `.agents/skills/ai-fix/assets/ai-fix-ignore`** — reply to those threads instead.
 - Replies to invalid or protected threads do NOT count as code changes — do not push for those alone.
