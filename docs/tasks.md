@@ -447,18 +447,21 @@ Feature: WhatsApp URL builder
 
 ---
 
-### ~~T-27 · AI fix feedback loop~~
+### T-27 · Gemini fix loop on AI review and workflow failures
 
-Closes the feedback loop started by T-22 (auto-implement) and T-26 (AI Code Review).
+Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
 
-- [x] Modify `post_review.py` dedup and `manage_reactions.py` to skip threads with replies (`comments.totalCount > 1`)
-- [x] Create `.github/workflows/ai-fix.yml` — single-step workflow, triggered by `pull_request_review: [submitted]`, uses `opencode/big-pickle` with inline prompt
-- [x] Model handles everything: fetch threads, fix/reply per thread, resolve via GraphQL, push, iteration counter
-- [x] Max 5 iterations guard via `<!-- ai-fix -->` counter comment
+- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
+- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
+- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
+- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
+- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
+- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
 
 **Notes:**
-- Follows the same simple pattern as T-22 auto-implement — no orchestrator scripts, no skill files
-- T-26 dedup skips threads with replies, preventing re-flagging of triaged comments
+- Gemini should be given `AGENTS.md` as context so fixes respect project standards
+- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
+- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
 
 ---
 
@@ -496,25 +499,25 @@ Follow-up improvement to T-22. The auto-implement workflow currently runs as `gi
 
 ---
 
-### ~~T-33 · Manual task selection via `workflow_dispatch`~~
+### T-33 · Manual task selection via `workflow_dispatch`
 
 
 Add a `workflow_dispatch` input to the auto-implement workflow so the user can pick which task to run when triggering manually, while preserving the existing `find-next-task` auto-detect behaviour on scheduled runs.
 
-- [x] Add an `inputs.task_id` text field to `workflow_dispatch` in `.github/workflows/auto-implement.yml` — accepts a task ID (e.g. `T-26`) or left blank for auto-detect
-- [x] Pass the input as a `TASK_ID` environment variable to the OpenCode step
-- [x] Update the OpenCode prompt: if `TASK_ID` is set and non-empty, skip `find-next-task` and use the ID directly; otherwise fall through to existing auto-detect logic
-- [x] Verify: manual dispatch with a task ID implements that task directly; empty ID or scheduled runs keep the current behaviour
+- [ ] Add an `inputs.task_id` text field to `workflow_dispatch` in `.github/workflows/auto-implement.yml` — accepts a task ID (e.g. `T-26`) or left blank for auto-detect
+- [ ] Pass the input as a `TASK_ID` environment variable to the OpenCode step
+- [ ] Update the OpenCode prompt: if `TASK_ID` is set and non-empty, skip `find-next-task` and use the ID directly; otherwise fall through to existing auto-detect logic
+- [ ] Verify: manual dispatch with a task ID implements that task directly; empty ID or scheduled runs keep the current behaviour
 
 ---
 
-### ~~T-34 · Move DESIGN.md to root and apply Google Labs format~~
+### T-34 · Move DESIGN.md to root and apply Google Labs format
 
-- [x] Restructure `docs/DESIGN.md` to follow the [Google Labs `design.md` spec](https://github.com/google-labs-code/design.md): add YAML front matter with design tokens (colors, typography, spacing, rounded) and reorder sections per the spec's canonical order
-- [x] Move `docs/DESIGN.md` to repo root (`DESIGN.md`)
-- [x] Update `AGENTS.md` reference from `docs/DESIGN.md` to `DESIGN.md`
-- [x] Validate with `npx @google/design.md lint DESIGN.md`
-- [x] Add `.github/workflows/design-lint.yml` that runs `npx @google/design.md lint DESIGN.md` on pushes/PRs that modify `DESIGN.md`
+- [ ] Restructure `docs/DESIGN.md` to follow the [Google Labs `design.md` spec](https://github.com/google-labs-code/design.md): add YAML front matter with design tokens (colors, typography, spacing, rounded) and reorder sections per the spec's canonical order
+- [ ] Move `docs/DESIGN.md` to repo root (`DESIGN.md`)
+- [ ] Update `AGENTS.md` reference from `docs/DESIGN.md` to `DESIGN.md`
+- [ ] Validate with `npx @google/design.md lint DESIGN.md`
+- [ ] Add `.github/workflows/design-lint.yml` that runs `npx @google/design.md lint DESIGN.md` on pushes/PRs that modify `DESIGN.md`
 
 **Notes:**
 - The YAML front matter tokens must reflect the current design system documented in the existing file
@@ -523,20 +526,20 @@ Add a `workflow_dispatch` input to the auto-implement workflow so the user can p
 
 ---
 
-### T-36 · PR rebase workflow
+### T-35 · Simplify AI Code Review to single-step workflow
 
-Automated workflow that accepts a PR number as input, rebases the branch onto the latest `main`, and resolves any conflicts using an AI agent.
+The current T-26 workflow (`ai-review.yml`) has 5 steps (eyes reaction, opencode run, post_review.py, manage_reactions.py, remove eyes). Simplify it to a single `opencode run` call like T-22 and T-27, where the model handles everything (posting inline comments, reactions, dedup) via `gh api` directly.
 
-- [ ] Create `.agents/skills/pr-rebase/SKILL.md` — instructions for the agent to fetch the PR branch, rebase onto `main`, resolve conflicts intelligently, and force-push
-- [ ] Create `.github/workflows/pr-rebase.yml` — thin `workflow_dispatch` wrapper accepting a `pr_number` input, calling the `pr-rebase` skill via `opencode/big-pickle`
-- [ ] Skill must: checkout the PR branch, run `git rebase origin/main`, resolve any conflicts by applying the intent of both sides, stage resolved files, continue the rebase, and force-push with lease
-- [ ] If rebase succeeds with no conflicts, skip the AI step and push directly
-- [ ] If rebase fails after the AI attempt, post a comment on the PR explaining what could not be resolved automatically
+- [ ] Rewrite `.github/workflows/ai-review.yml` to a single-step workflow matching the T-22/T-27 pattern
+- [ ] Move all posting and reaction logic into `.agents/skills/ai-review/SKILL.md` as `gh api` commands the model executes
+- [ ] Remove `.agents/skills/ai-review/scripts/post_review.py`
+- [ ] Remove `.agents/skills/ai-review/scripts/manage_reactions.py`
+- [ ] Update dedup approach: instead of pre-computing via Python, have the model query existing unresolved threads with `gh api graphql` and skip duplicates inline
 
 **Notes:**
-- Follows the skill + thin workflow pattern documented in `docs/architecture.md`
-- Conflict resolution should favour the PR branch intent for feature code and `main` intent for config/workflow files listed in `.agents/skills/pr-fix/assets/ai-fix-ignore`
-- Model: `opencode/big-pickle`
+- The SKILL.md already has most of the logic — only the posting step needs to move from script to inline `gh api` calls
+- Keep the `<!-- ai-review -->` marker so the model can identify its own previous comments for dedup
+- The model should post a PR review with inline comments via `gh api repos/.../pulls/.../reviews -X POST`, and manage reactions via `gh api repos/.../issues/.../reactions`
 
 ---
 
