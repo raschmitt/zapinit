@@ -14,10 +14,10 @@ Process all unresolved review threads on the current PR and either fix the code 
 
 ### 1. Load protected files
 
-Read `.ai-fix-ignore` and collect all glob patterns. Files matching any pattern must never be modified.
+Read `.agents/skills/ai-fix/assets/ai-fix-ignore` and collect all glob patterns. Files matching any pattern must never be modified.
 
 ```bash
-cat .ai-fix-ignore
+cat .agents/skills/ai-fix/assets/ai-fix-ignore
 ```
 
 ### 2. Check iteration limit
