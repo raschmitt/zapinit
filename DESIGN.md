@@ -2,21 +2,15 @@
 name: zapinit
 colors:
   whatsapp-green: "#25D366"
+  primary: "#25D366"
   cta-hover: "#1ebe5d"
   cta-active: "#18a852"
   error-red: "#ef4444"
   error-red-dark: "#f87171"
-  text-primary: "#374151"
-  text-primary-dark: "#d1d5db"
-  text-muted: "#6b7280"
-  text-muted-dark: "#9ca3af"
   border: "#e5e7eb"
   border-dark: "#374151"
   page-bg: "#ffffff"
   page-bg-dark: "#111827"
-  bmc-hover: "#FFDD00"
-  github-hover-light: "#374151"
-  github-hover-dark: "#e5e7eb"
 typography:
   logo:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
@@ -59,11 +53,9 @@ components:
     backgroundColor: "{colors.cta-active}"
   input-container:
     backgroundColor: "{colors.page-bg}"
-    borderColor: "{colors.border}"
     rounded: "{rounded.full}"
   input-container-dark:
     backgroundColor: "{colors.page-bg-dark}"
-    borderColor: "{colors.border-dark}"
     rounded: "{rounded.full}"
   error-message:
     textColor: "{colors.error-red}"
