@@ -466,10 +466,10 @@ Closes the feedback loop started by T-22 (auto-implement) and T-26 (AI Code Revi
 
 Depends on T-27 — merge should only trigger once the fix loop exits cleanly.
 
-- [-] Initially: post a comment on the PR indicating it is ready to merge and tag the repo owner for manual review
-- [-] Later (phase 2): automatically merge the PR using `gh pr merge --squash --auto` once T-27 exits cleanly and all branch protection checks pass
-- [-] Ensure the merge commit message follows Conventional Commits format
-- [-] Notify via a final PR comment summarising what was implemented and what CI checks passed
+- [ ] Initially: post a comment on the PR indicating it is ready to merge and tag the repo owner for manual review
+- [ ] Later (phase 2): automatically merge the PR using `gh pr merge --squash --auto` once T-27 exits cleanly and all branch protection checks pass
+- [ ] Ensure the merge commit message follows Conventional Commits format
+- [ ] Notify via a final PR comment summarising what was implemented and what CI checks passed
 
 **Notes:**
 - Phase 1 (manual) should be shipped first to build confidence in the automation quality before enabling auto-merge
