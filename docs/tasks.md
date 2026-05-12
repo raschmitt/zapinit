@@ -523,6 +523,23 @@ Add a `workflow_dispatch` input to the auto-implement workflow so the user can p
 
 ---
 
+### T-35 · Simplify AI Code Review to single-step workflow
+
+The current T-26 workflow (`ai-review.yml`) has 5 steps (eyes reaction, opencode run, post_review.py, manage_reactions.py, remove eyes). Simplify it to a single `opencode run` call like T-22 and T-27, where the model handles everything (posting inline comments, reactions, dedup) via `gh api` directly.
+
+- [ ] Rewrite `.github/workflows/ai-review.yml` to a single-step workflow matching the T-22/T-27 pattern
+- [ ] Move all posting and reaction logic into `.agents/skills/pr-review/SKILL.md` as `gh api` commands the model executes
+- [ ] Remove `.agents/skills/pr-review/scripts/post_review.py`
+- [ ] Remove `.agents/skills/pr-review/scripts/manage_reactions.py`
+- [ ] Update dedup approach: instead of pre-computing via Python, have the model query existing unresolved threads with `gh api graphql` and skip duplicates inline
+
+**Notes:**
+- The SKILL.md already has most of the logic — only the posting step needs to move from script to inline `gh api` calls
+- Keep the `<!-- ai-review -->` marker so the model can identify its own previous comments for dedup
+- The model should post a PR review with inline comments via `gh api repos/.../pulls/.../reviews -X POST`, and manage reactions via `gh api repos/.../issues/.../reactions`
+
+---
+
 ### T-36 · PR rebase workflow
 
 Automated workflow that accepts a PR number as input, rebases the branch onto the latest `main`, and resolves any conflicts using an AI agent.
