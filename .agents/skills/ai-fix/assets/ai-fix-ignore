@@ -1,0 +1,4 @@
+# Files the AI fix workflow must never modify.
+# Glob patterns, one per line. Supports ** wildcards.
+.github/workflows/**
+.ai-fix-ignore

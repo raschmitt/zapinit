@@ -447,21 +447,18 @@ Feature: WhatsApp URL builder
 
 ---
 
-### T-27 · Gemini fix loop on AI review and workflow failures
+### T-27 · AI fix feedback loop
 
-Closes the feedback loop started by T-22 (auto-implement) and T-26 (Codex review).
+Closes the feedback loop started by T-22 (auto-implement) and T-26 (AI Code Review).
 
-- [ ] Add `.github/workflows/ai-fix.yml` that triggers whenever T-26 posts or updates a review comment, and whenever any CI workflow job fails on a PR
-- [ ] Workflow invokes Gemini CLI in YOLO mode with the following context: current diff, Codex review comment, and failed workflow logs (fetched via `gh run view`)
-- [ ] Gemini applies fixes, commits to the PR branch, and pushes — which re-triggers Codex (T-26) for another review pass
-- [ ] Loop continues until Codex marks the review as satisfied (detect via a specific marker in the comment, e.g. `<!-- review: ok -->`) AND all CI jobs pass
-- [ ] Add a max-iteration guard (e.g. 5 rounds) to prevent infinite loops — post a comment asking for human intervention if the limit is reached
-- [ ] Workflow must be idempotent: skip if the last commit on the branch was already made by the automation bot
+- [x] Modify `post_review.py` dedup and `manage_reactions.py` to skip threads with replies (`comments.totalCount > 1`)
+- [x] Create `.github/workflows/ai-fix.yml` — single-step workflow, triggered by `pull_request_review: [submitted]`, uses `opencode/big-pickle` with inline prompt
+- [x] Model handles everything: fetch threads, fix/reply per thread, resolve via GraphQL, push, iteration counter
+- [x] Max 5 iterations guard via `<!-- ai-fix -->` counter comment
 
 **Notes:**
-- Gemini should be given `AGENTS.md` as context so fixes respect project standards
-- Workflow logs for failed jobs can be fetched with `gh run view <run-id> --log-failed`
-- The loop only runs on PRs opened by the T-22 auto-implement workflow, not on human PRs
+- Follows the same simple pattern as T-22 auto-implement — no orchestrator scripts, no skill files
+- T-26 dedup skips threads with replies, preventing re-flagging of triaged comments
 
 ---
 

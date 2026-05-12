@@ -9,7 +9,6 @@ import os
 import subprocess
 import sys
 
-MARKER = "<!-- ai-review -->"
 REPO = "raschmitt/zapinit"
 
 
@@ -23,13 +22,14 @@ def run_gh(*args: str, stdin: str | None = None) -> subprocess.CompletedProcess:
     )
 
 
-def has_open_ai_comments(pr_number: str) -> bool:
+def has_open_unresolved_threads(pr_number: str) -> bool:
     owner, repo_name = REPO.split("/")
     query = (
         f'{{ repository(owner: "{owner}", name: "{repo_name}") {{'
         f" pullRequest(number: {pr_number}) {{"
         f" reviewThreads(first: 100) {{ nodes {{ isResolved"
-        f" comments(first: 1) {{ nodes {{ body }} }} }} }} }} }} }}"
+        f" comments(first: 2) {{ nodes {{ body }} totalCount }}"
+        f" }} }} }} }} }}"
     )
     try:
         result = run_gh("api", "graphql", "-f", f"query={query}")
@@ -49,8 +49,12 @@ def has_open_ai_comments(pr_number: str) -> bool:
     for thread in threads:
         if thread.get("isResolved"):
             continue
-        nodes = thread.get("comments", {}).get("nodes", [])
-        if nodes and MARKER in nodes[0].get("body", ""):
+        comments_node = thread.get("comments", {})
+        total_count = comments_node.get("totalCount", 1)
+        if total_count > 1:
+            continue
+        nodes = comments_node.get("nodes", [])
+        if nodes:
             return True
     return False
 
@@ -72,7 +76,7 @@ def main() -> None:
         print("PR_NUMBER env var not set", file=sys.stderr)
         sys.exit(1)
 
-    open_comments = has_open_ai_comments(pr_number)
+    open_comments = has_open_unresolved_threads(pr_number)
     existing_id = get_thumbsup_reaction_id(pr_number)
 
     if open_comments:
