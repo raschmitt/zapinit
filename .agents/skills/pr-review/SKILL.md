@@ -84,3 +84,4 @@ Review the PR diff and post a structured review comment.
 - Flag missing tests as a high-severity issue for new features or behaviour changes
 - Do not modify any files — this is a review-only task
 - **Avoid repeating findings** that were already raised in previous reviews on the same PR — unless the issue is still present and unaddressed, in which case note it as persisting rather than raising it as new
+- **Never flag task-compliance or test-coverage issues on docs PRs.** A PR is a docs PR if all changed files are under `docs/` and the commit type is `docs:`. Such PRs have no implementation obligation — adding or updating task definitions is their entire purpose. If the PR touches files outside `docs/` or uses a non-`docs` commit type, apply the full review
