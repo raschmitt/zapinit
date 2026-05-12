@@ -1,5 +1,5 @@
 ---
-name: ai-fix
+name: pr-fix
 description: Processes unresolved PR review threads — fixes valid issues and replies to invalid ones. Triggers when asked to fix review comments or address PR feedback. Can be run locally or called by the AI Fix Loop workflow.
 ---
 

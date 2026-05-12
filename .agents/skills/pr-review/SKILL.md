@@ -1,5 +1,5 @@
 ---
-name: ai-review
+name: pr-review
 description: Reviews PR code diffs for bugs, security issues, and quality problems. Triggers when asked to review or audit a pull request diff.
 ---
 
