@@ -225,6 +225,8 @@ def get_unresolved_positions(pr_number: str) -> tuple[set[tuple[str, int]], set[
         if not nodes:
             continue
         comment = nodes[0]
+        if MARKER not in comment.get("body", ""):
+            continue
         path = comment.get("path")
         line = comment.get("line")
         if not path:

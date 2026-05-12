@@ -2,16 +2,45 @@ name: AI Fix Loop
 on:
   pull_request_review:
     types: [submitted]
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
 permissions:
   contents: write
   pull-requests: write
 jobs:
   fix:
+    if: |
+      github.event_name == 'pull_request_review' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure')
     runs-on: ubuntu-latest
     steps:
+      - name: Extract PR context
+        id: context
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            PRS='${{ toJSON(github.event.workflow_run.pull_requests) }}'
+            PR_NUMBER=$(echo "$PRS" | jq -r '.[0].number // empty')
+            BRANCH_REF="${{ github.event.workflow_run.head_branch }}"
+            CHECKOUT_REF="$BRANCH_REF"
+            if [ -z "$PR_NUMBER" ]; then
+              echo "No PR associated with this CI run; exiting"
+              exit 0
+            fi
+          else
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            BRANCH_REF="${{ github.event.pull_request.head.ref }}"
+            CHECKOUT_REF="main"
+          fi
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "branch_ref=$BRANCH_REF" >> "$GITHUB_OUTPUT"
+          echo "checkout_ref=$CHECKOUT_REF" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ steps.context.outputs.checkout_ref }}
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
       - uses: actions/setup-python@v5
@@ -29,8 +58,8 @@ jobs:
       - name: Process review comments
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          BRANCH_REF: ${{ github.event.pull_request.head.ref }}
+          PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          BRANCH_REF: ${{ steps.context.outputs.branch_ref }}
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
           opencode run -m opencode/big-pickle --dangerously-skip-permissions \
