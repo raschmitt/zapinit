@@ -124,6 +124,7 @@ gh api repos/raschmitt/zapinit/issues/$PR_NUMBER/comments \
 $(echo "$CONFLICT_FILES" | sed 's/^/- /')
 
 These files require manual resolution. Please rebase locally and resolve the remaining conflicts."
+  exit 1
 ```
 
 ## Rules
