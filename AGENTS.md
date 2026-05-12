@@ -233,3 +233,10 @@ A small, focused diff is easier to review and less likely to introduce bugs. Res
 
 ### DESIGN.md — living design document
 AI agents working on UI tasks **must read `docs/DESIGN.md`** before making visual changes. If a change introduces a new component, colour, or layout element, the agent **must update `docs/DESIGN.md`** to keep it in sync with the current state of the app. This ensures the document remains an accurate reference for future agents and contributors.
+
+### AI models in use
+
+| Workflow | Model | Location |
+|---|---|---|
+| AI Code Review (T-26) | `opencode/minimax-m2.5-free` | `.github/workflows/ai-review.yml` |
+| AI Fix Loop (T-27) | `opencode/big-pickle` | `.github/workflows/ai-fix.yml` |

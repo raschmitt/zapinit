@@ -59,7 +59,7 @@ jobs:
                 number. If >= 5, stop and do nothing. If not found, this is
                 iteration 1.
 
-             4. For each thread where unresolved AND totalCount == 1:
+             4. For each thread where unresolved AND totalCount == 1 AND the first comment body contains '<!-- ai-review -->':
                 - Valid issue: fix the code, then resolve the thread with:
                   gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: \"<ID>\" }) { thread { isResolved } } }'
                 - Invalid: reply (do NOT resolve) with:
