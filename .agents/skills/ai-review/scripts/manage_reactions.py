@@ -55,7 +55,9 @@ def has_open_unresolved_threads(pr_number: str) -> bool:
         if total_count > 1:
             continue
         nodes = comments_node.get("nodes", [])
-        if nodes and MARKER in nodes[0].get("body", ""):
+        if not nodes:
+            continue
+        if MARKER in nodes[0].get("body", ""):
             return True
     return False
 
