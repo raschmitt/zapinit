@@ -22,7 +22,7 @@ Review the PR diff and post a structured review comment.
     Then read the referenced `.md` files for context:
     - `docs/tasks.md` — find the current task section and verify what it demands
     - `docs/architecture.md` — check architectural decisions and tech stack
-    - `docs/DESIGN.md` — if it exists, check visual and UX design conventions
+    - `DESIGN.md` — check visual and UX design conventions
 
 3.  Check which issues have already been posted as inline comments on this PR so you
     do not raise the same finding twice. **This step is for deduplication only — you
@@ -43,7 +43,7 @@ Review the PR diff and post a structured review comment.
 5.  Analyze the changes for:
     - **Task compliance** — does the PR deliver what `docs/tasks.md` asks for? Are all subtasks implemented?
     - **Architectural fit** — does the implementation follow `docs/architecture.md`? (tech stack, vendor choices, design decisions)
-    - **Design consistency** — if `docs/DESIGN.md` exists and the PR touches UI, does it follow the documented design?
+    - **Design consistency** — if `DESIGN.md` exists and the PR touches UI, does it follow the documented design?
     - Logic errors and potential bugs
     - Security vulnerabilities
     - Code quality and maintainability issues
