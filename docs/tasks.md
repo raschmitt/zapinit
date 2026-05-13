@@ -557,16 +557,16 @@ Automated workflow that accepts a PR number as input, rebases the branch onto th
 
 ---
 
-### T-37 · Replace manual OpenCode install with official GitHub Action
+### ~~T-37 · Replace manual OpenCode install with official GitHub Action~~
 
 Replace the `curl -fsSL https://opencode.ai/install | bash` + `opencode run` pattern in all workflows with the official `opencode-ai/opencode/github@latest` action.
 
-- [ ] Update `pr-review.yml` to use the official action instead of manual install + `opencode run`
-- [ ] Update `pr-fix.yml` to use the official action instead of manual install + `opencode run`
-- [ ] Update `auto-implement.yml` to use the official action instead of manual install + `opencode run`
-- [ ] Update `pr-rebase.yml` (T-36) to use the official action from the start
-- [ ] Verify all workflows pass CI after the migration
-- [ ] Remove the `Install OpenCode CLI` step from all affected workflows once replaced
+- [x] Update `pr-review.yml` to use the official action instead of manual install + `opencode run`
+- [x] Update `pr-fix.yml` to use the official action instead of manual install + `opencode run`
+- [x] Update `auto-implement.yml` to use the official action instead of manual install + `opencode run`
+- [x] Update `pr-rebase.yml` (T-36) to use the official action from the start
+- [x] Verify all workflows pass CI after the migration
+- [x] Remove the `Install OpenCode CLI` step from all affected workflows once replaced
 
 **Notes:**
 - Official action reference: `opencode-ai/opencode/github@latest` — accepts `model`, `prompt`, and `token` inputs
