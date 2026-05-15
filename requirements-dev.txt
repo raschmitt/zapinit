@@ -3,7 +3,7 @@ pytest==9.0.3
 pytest-bdd==8.1.0
 pytest-cov==7.1.0
 httpx==0.28.1
-ruff==0.15.12
+ruff==0.15.13
 mutmut==2.5.1
 pip-audit==2.10.0
 bandit==1.9.4
