@@ -284,13 +284,13 @@ Feature: Dynamic favicon
 
 ## Milestone 2 — Quality & CI
 
-### T-05 · Test suite setup
+### ~~T-05 · Test suite setup~~
 
-- [ ] Create `tests/conftest.py` with FastAPI `TestClient` fixture
-- [ ] Create `tests/features/` directory for `.feature` files
-- [ ] Create `tests/step_defs/` for pytest-bdd step definitions
-- [ ] All tests pass with `pytest`
-- [ ] Remove `sonar.coverage.exclusions=app/static/**` from `sonar-project.properties`
+- [x] Create `tests/conftest.py` with FastAPI `TestClient` fixture
+- [x] Create `tests/features/` directory for `.feature` files
+- [x] Create `tests/step_defs/` for pytest-bdd step definitions
+- [x] All tests pass with `pytest`
+- [x] Remove `sonar.coverage.exclusions=app/static/**` from `sonar-project.properties`
 
 **BDD scenarios:**
 
