@@ -23,26 +23,24 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install OpenCode CLI
-        run: curl -fsSL https://opencode.ai/install | bash
-
       - name: React with eyes (reviewing)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions -X POST --field content=eyes
 
       - name: Run AI code review
+        uses: anomalyco/opencode/github@latest
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          export PATH="$HOME/.opencode/bin:$PATH"
-          opencode run -m opencode/minimax-m2.5-free --dangerously-skip-permissions \
-            "Review the PR diff by following the instructions in:
-             @.agents/skills/pr-review/SKILL.md
+        with:
+          model: opencode/minimax-m2.5-free
+          prompt: |
+            Review the PR diff by following the instructions in:
+            @.agents/skills/pr-review/SKILL.md
 
-             The PR number is in the PR_NUMBER environment variable.
-             Do NOT modify any files — only review and write /tmp/ai-review.md."
+            The PR number is in the PR_NUMBER environment variable.
+            Do NOT modify any files — only review and write /tmp/ai-review.md.
 
       - name: Post review
         if: always()
