@@ -76,6 +76,44 @@ const COUNTRIES = [
     { code: 'VN', dial: '+84',  flag: '🇻🇳', name: 'Vietnam' },
 ];
 
+const i18n = {
+    en: {
+        button: 'Open on WhatsApp',
+        placeholder: 'Phone number',
+        errorEmpty: 'Please enter a phone number',
+        errorInvalid: 'Invalid phone number',
+        about: 'Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter.',
+    },
+    pt: {
+        button: 'Abrir no WhatsApp',
+        placeholder: 'Número de telefone',
+        errorEmpty: 'Por favor, insira um número de telefone',
+        errorInvalid: 'Número de telefone inválido',
+        about: 'Cansado de salvar um contato só para mandar uma mensagem? Digite um número e abra o WhatsApp na hora, sem contatos, sem bagunça.',
+    },
+};
+
+function applyLocale(lang) {
+    const key = lang && lang.startsWith('pt') ? 'pt' : 'en';
+    const strings = i18n[key];
+
+    const btn = document.getElementById('open-wa');
+    if (btn) {
+        const svg = btn.querySelector('svg');
+        btn.textContent = '';
+        if (svg) btn.appendChild(svg);
+        btn.appendChild(document.createTextNode(' ' + strings.button));
+    }
+
+    const phone = document.getElementById('phone');
+    if (phone) phone.placeholder = strings.placeholder;
+
+    const about = document.querySelector('p.text-center.text-sm');
+    if (about) about.textContent = strings.about;
+}
+
+globalThis.applyLocale = applyLocale;
+
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     const sunIcon = document.getElementById('sun-icon');
@@ -114,6 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
             applyTheme(e.matches);
         }
     });
+
+    applyLocale(navigator.language);
 
     const select = document.getElementById('country');
 
@@ -154,9 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function openWhatsApp() {
         clearError();
         const raw = phoneInput.value.trim();
+        const lang = navigator.language;
+        const locale = lang && lang.startsWith('pt') ? 'pt' : 'en';
+        const strings = i18n[locale];
 
         if (!raw) {
-            showError('Please enter a phone number');
+            showError(strings.errorEmpty);
             return;
         }
 
@@ -165,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parsed = libphonenumber.parsePhoneNumberFromString(normalized, countryCode);
 
         if (!parsed?.isValid()) {
-            showError('Invalid phone number');
+            showError(strings.errorInvalid);
             return;
         }
 

@@ -163,7 +163,7 @@ Feature: WhatsApp redirect
 
 ### T-29 · UI localization (PT / EN)
 
-- [ ] Detect browser language via `navigator.language` on page load
+- [-] Detect browser language via `navigator.language` on page load
 - [ ] If the language starts with `"pt"` (e.g. `pt-BR`, `pt-PT`), apply Portuguese strings; otherwise default to English
 - [ ] No other languages required
 - [ ] Localised strings must cover all user-visible text: button label, input placeholder, both error messages, and the about blurb
