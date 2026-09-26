@@ -1,0 +1,35 @@
+name: PR Rebase
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to rebase'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Rebase PR onto main
+        uses: anomalyco/opencode/github@latest
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        with:
+          model: opencode/big-pickle
+          prompt: |
+            Follow the instructions in:
+            @.agents/skills/pr-rebase/SKILL.md
+
+            The PR number is in the PR_NUMBER environment variable.
