@@ -11,29 +11,21 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install OpenCode CLI
         run: curl -fsSL https://opencode.ai/install | bash
 
-      - name: React with eyes (reviewing)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions -X POST --field content=eyes
-
       - name: Run AI code review
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
@@ -42,34 +34,4 @@ jobs:
              @.agents/skills/pr-review/SKILL.md
 
              The PR number is in the PR_NUMBER environment variable.
-             Do NOT modify any files — only review and write /tmp/ai-review.md."
-
-      - name: Post review
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ -f /tmp/ai-review.md ]; then
-            python3 .agents/skills/pr-review/scripts/post_review.py
-          else
-            echo "No review file generated — skipping post step"
-          fi
-
-      - name: Manage thumbs-up reaction
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: python3 .agents/skills/pr-review/scripts/manage_reactions.py
-
-      - name: Remove eyes reaction (review done)
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          REACTION_ID=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions \
-            --jq '.[] | select(.content == "eyes" and .user.login == "github-actions[bot]") | .id')
-          if [ -n "$REACTION_ID" ]; then
-            gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions/$REACTION_ID -X DELETE
-          fi
+             Do NOT modify any files — only review and post comments."
