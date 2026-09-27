@@ -306,10 +306,10 @@ Feature: Server health
 
 ---
 
-### T-06 · Phone number URL builder unit tests
+### ~~T-06 · Phone number URL builder unit tests~~
 
-- [ ] Extract URL construction to a pure Python helper `build_wa_url(e164: str) -> str`
-- [ ] Unit test all edge cases (leading `+`, spaces, dashes, country codes)
+- [x] Extract URL construction to a pure Python helper `build_wa_url(e164: str) -> str`
+- [x] Unit test all edge cases (leading `+`, spaces, dashes, country codes)
 
 **BDD scenarios:**
 
