@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Runs mutmut and fails if the mutation score is below THRESHOLD.
 
-Current threshold: 50% — raise to 65% once T-06 (build_wa_url unit tests) lands,
-since the surviving mutants are mostly static-file config lines not exercised by
+Current threshold: 65% — T-06 (build_wa_url unit tests) has landed, raising from 50%.
+Surviving mutants below this are mostly static-file config lines not exercised by
 the current BDD integration tests.
 """
 
@@ -10,7 +10,7 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
-THRESHOLD = 50
+THRESHOLD = 65
 
 
 def main() -> None:
