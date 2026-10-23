@@ -76,7 +76,46 @@ const COUNTRIES = [
     { code: 'VN', dial: '+84',  flag: '🇻🇳', name: 'Vietnam' },
 ];
 
+const I18N = {
+    en: {
+        buttonLabel: 'Open on WhatsApp',
+        placeholder: 'Phone number',
+        errorEmpty: 'Please enter a phone number',
+        errorInvalid: 'Invalid phone number',
+        aboutBlurb: 'Tired of saving a contact just to send one message? Type a number and open WhatsApp instantly, no contacts, no clutter.'
+    },
+    pt: {
+        buttonLabel: 'Abrir no WhatsApp',
+        placeholder: 'Número de telefone',
+        errorEmpty: 'Por favor, insira um número de telefone',
+        errorInvalid: 'Número de telefone inválido',
+        aboutBlurb: 'Cansado de salvar um contato só para mandar uma mensagem? Digite um número e abra o WhatsApp na hora, sem contatos, sem bagunça.'
+    }
+};
+
+function applyLocale(lang) {
+    const locale = lang && lang.toLowerCase().startsWith('pt') ? 'pt' : 'en';
+    const strings = I18N[locale];
+
+    const btnText = document.getElementById('btn-open-wa-text');
+    if (btnText) btnText.textContent = strings.buttonLabel;
+
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) phoneInput.placeholder = strings.placeholder;
+
+    const aboutBlurb = document.getElementById('about-blurb');
+    if (aboutBlurb) aboutBlurb.textContent = strings.aboutBlurb;
+
+    globalThis._zapinitI18n = strings;
+}
+
+globalThis.applyLocale = applyLocale;
+globalThis.I18N = I18N;
+
 document.addEventListener('DOMContentLoaded', () => {
+    const browserLang = globalThis.navigator && globalThis.navigator.language ? globalThis.navigator.language : 'en';
+    applyLocale(browserLang);
+
     const themeToggle = document.getElementById('theme-toggle');
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
@@ -141,6 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const openWaBtn = document.getElementById('open-wa');
     const errorMsg = document.getElementById('error-msg');
 
+    function getI18n() {
+        return globalThis._zapinitI18n || I18N.en;
+    }
+
     function showError(msg) {
         errorMsg.textContent = msg;
         errorMsg.classList.remove('hidden');
@@ -154,9 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function openWhatsApp() {
         clearError();
         const raw = phoneInput.value.trim();
+        const strings = getI18n();
 
         if (!raw) {
-            showError('Please enter a phone number');
+            showError(strings.errorEmpty);
             return;
         }
 
@@ -165,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parsed = libphonenumber.parsePhoneNumberFromString(normalized, countryCode);
 
         if (!parsed?.isValid()) {
-            showError('Invalid phone number');
+            showError(strings.errorInvalid);
             return;
         }
 
