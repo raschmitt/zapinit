@@ -1,8 +1,9 @@
 name: CI
 
+# Project paused: every other workflow and Dependabot live in .github/disabled/.
+# CI stays on pull_request only because the main ruleset requires its checks
+# (lint, security, test, sonarcloud, mutation) to merge any PR.
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
